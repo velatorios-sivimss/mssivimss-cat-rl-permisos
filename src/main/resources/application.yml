@@ -1,0 +1,40 @@
+server:
+  port: 8080
+  servlet:
+    contextPath: /ms-flujo
+spring:
+  mvc:
+    pathmatch:
+      matching-strategy: ANT_PATH_MATCHER
+      
+
+      
+  main:
+    allow-circular-references: true
+    
+  
+        
+  servlet:
+    multipart:
+      max-file-size: 30MB
+      max-request-size: 30MB
+            
+logging:
+  level:
+    root: info
+    org.springframework.web: info
+    org.hibernate: error
+
+logos:
+  msit_logo_imss: /sintrans_data/LOGOS/logoImss.png
+  msit_logo_sistema: /sintrans_data/LOGOS/logoSistema.png
+
+endpoints:
+   consulta-ooads: http://localhost:8090/dominio/
+   paginado-unidad: http://localhost:8090/dominio/ooad/paginacion
+   dominio-consulta: http://localhost:8094/mssivimss-mod-catalogos
+
+jwt:
+  secretkey-flujo: funcionamuybien
+  secretkey-dominios: funcionamuybiendominio
+  expiration-milliseconds: 360
