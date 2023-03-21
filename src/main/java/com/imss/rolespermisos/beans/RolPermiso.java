@@ -36,6 +36,7 @@ public class RolPermiso {
 	private Integer idUsuarioAlta;
 	private Integer idUsuarioModifica;
 	private String fechaModifica;
+	private final String now = "NOW()";
 
 	public RolPermiso(RolesPermisosRequest rolesPermisosRequest) {
 		this.idRol = rolesPermisosRequest.getIdRol();
@@ -67,6 +68,41 @@ public class RolPermiso {
 
 		return request;
 	}
+public DatosRequest obtenerDetalleRolPermiso() {
+
+	DatosRequest request = new DatosRequest();
+	Map<String, Object> parametro = new HashMap<>();
+	String query = "SELECT  srfp.ID_ROL AS 'idRol', sf.DES_FUNCIONALIDAD AS funcionalidad, sr.DES_ROL AS 'nombre', sno.ID_OFICINA  AS 'nivel' "
+				+ " ,sr.CVE_ESTATUS AS 'estatus',  GROUP_CONCAT(sp.DES_PERMISO) AS permisos "
+				+ " , srfp.FEC_CREACION AS fechaCreacion "
+				+ " FROM svc_rol_funcionalidad_permiso srfp "
+				+ " INNER JOIN svc_rol sr ON srfp.ID_ROL = sr.ID_ROL "
+				+ " INNER JOIN svc_nivel_oficina sno ON sr.ID_OFICINA = sno.ID_OFICINA "
+				+ " INNER JOIN svc_permiso sp ON srfp.ID_PERMISO = sp.ID_PERMISO "
+				+ " INNER JOIN svc_funcionalidad sf ON sf.ID_FUNCIONALIDAD = srfp.ID_FUNCIONALIDAD "
+				+ " WHERE srfp.CVE_Estatus = 1 AND srfp.ID_ROL = " + this.idRol  
+				+ " AND srfp.ID_FUNCIONALIDAD = " + this.idFuncionalidad  
+				+ " GROUP BY 1,2";	
+		String encoded = DatatypeConverter.printBase64Binary(query.getBytes());
+		parametro.put(AppConstantes.QUERY, encoded);
+		request.setDatos(parametro);
+
+		return request;
+	}
+	public DatosRequest buscarRolPermiso() {
+		DatosRequest request = new DatosRequest();
+		Map<String, Object> parametro = new HashMap<>();
+		String query = "SELECT  srfp.ID_ROL AS 'id', srfp.ID_FUNCIONALIDAD  AS funcionalidad , srfp.ID_PERMISO  AS 'idPermiso' "
+				+ " FROM svc_rol_funcionalidad_permiso srfp "
+				+ " WHERE srfp.ID_ROL = " + this.idRol  
+				+ " AND srfp.ID_FUNCIONALIDAD = " + this.idFuncionalidad  
+				+ " AND  srfp.ID_PERMISO =  " + this.idPermiso ;	
+		String encoded = DatatypeConverter.printBase64Binary(query.getBytes());
+		parametro.put(AppConstantes.QUERY, encoded);
+		request.setDatos(parametro);
+
+		return request;
+	}
 
 
 	public DatosRequest insertar() {
@@ -79,7 +115,7 @@ public class RolPermiso {
 		q.agregarParametroValues("ID_PERMISO", "'" + this.idPermiso + "'");
 		q.agregarParametroValues("CVE_ESTATUS", "" + this.estatus);
 		q.agregarParametroValues("ID_USUARIO_ALTA", "'" + this.idUsuarioAlta + "'");
-		q.agregarParametroValues("FEC_CREACION", "NOW()");
+		q.agregarParametroValues("FEC_CREACION", now);
 		String query = q.obtenerQueryInsertar();
 		String encoded = DatatypeConverter.printBase64Binary(query.getBytes());
 		parametro.put(AppConstantes.QUERY, encoded);
@@ -95,7 +131,7 @@ public class RolPermiso {
 		final QueryHelper q = new QueryHelper("UPDATE SVC_ROL_FUNCIONALIDAD_PERMISO");
 		q.agregarParametroValues("CVE_ESTATUS", "" + this.estatus);
 		q.agregarParametroValues("ID_USUARIO_MODIFICA", "'" + this.idUsuarioModifica + "'");
-		q.agregarParametroValues("FEC_ACTUALIZACION", "NOW()");
+		q.agregarParametroValues("FEC_ACTUALIZACION", now);
 		q.addWhere("ID_ROL = " + this.idRol);
 		q.addWhere("AND ID_FUNCIONALIDAD = " + this.idFuncionalidad);
 		q.addWhere("AND ID_PERMISO = " + this.idPermiso);
@@ -105,4 +141,22 @@ public class RolPermiso {
 		request.setDatos(parametro);
 		return request;
 	}
+
+	public DatosRequest actualizarAInactivo() {
+		DatosRequest request = new DatosRequest();
+		Map<String, Object> parametro = new HashMap<>();
+
+		final QueryHelper q = new QueryHelper("UPDATE SVC_ROL_FUNCIONALIDAD_PERMISO");
+		q.agregarParametroValues("CVE_ESTATUS", "" + this.estatus);
+		q.agregarParametroValues("ID_USUARIO_MODIFICA", "'" + this.idUsuarioModifica + "'");
+		q.agregarParametroValues("FEC_ACTUALIZACION", now);
+		q.addWhere("ID_ROL = " + this.idRol);
+		q.addWhere("AND ID_FUNCIONALIDAD = " + this.idFuncionalidad);
+		String query = q.obtenerQueryActualizar();
+		String encoded = DatatypeConverter.printBase64Binary(query.getBytes());
+		parametro.put(AppConstantes.QUERY, encoded);
+		request.setDatos(parametro);
+		return request;
+	}
+	
 }

@@ -23,12 +23,18 @@ public class RolPermisoController {
 	private RolesPermisosService rolesPermisosService;
 	
 	@PostMapping("consultar/rolpermiso")
-	public Response<Object> consultaLista(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
+	public Response<Object> consultaRolPermiso(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
 	
 		return rolesPermisosService.consultarRolesPermisos(request,authentication);
       
 	}
+
+	@PostMapping("consultar/detalle-rolpermiso")
+	public Response<Object> consultaDetalleRolPermiso(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
 	
+		return rolesPermisosService.consultarDetalleRolPermiso(request,authentication);
+      
+	}
 	@PostMapping("consultar/niveles")
 	public Response<Object> consultaNiveles(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
 	

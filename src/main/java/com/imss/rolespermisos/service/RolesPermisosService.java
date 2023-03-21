@@ -10,6 +10,8 @@ import com.imss.rolespermisos.util.Response;
 public interface RolesPermisosService {
 
 	Response<Object> consultarRolesPermisos(DatosRequest request, Authentication authentication) throws IOException;
+	
+	Response<Object> consultarDetalleRolPermiso(DatosRequest request, Authentication authentication) throws IOException;
 
 	Response<Object> consultaNiveles(DatosRequest request, Authentication authentication) throws IOException;
 
