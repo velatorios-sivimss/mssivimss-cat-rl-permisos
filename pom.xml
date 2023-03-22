@@ -9,10 +9,10 @@
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.imss</groupId>
-	<artifactId>flujo</artifactId>
+	<artifactId>rolespermisos</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>flujo</name>
-	<description>Ms de Flujo</description>
+	<name>rolespermisos</name>
+	<description>Ms de Roles Permisos</description>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>1.8</java.version>
@@ -97,7 +97,6 @@
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
-			<version>3.9</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-security -->
 		<dependency>
@@ -111,6 +110,10 @@
 			<version>0.9.1</version>
 		</dependency>
 
+		<dependency>
+			<groupId>jakarta.xml.bind</groupId>
+			<artifactId>jakarta.xml.bind-api</artifactId>
+		</dependency>
 		
 	</dependencies>
 
