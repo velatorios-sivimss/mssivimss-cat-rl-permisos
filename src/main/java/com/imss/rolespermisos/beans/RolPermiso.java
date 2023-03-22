@@ -41,6 +41,9 @@ public class RolPermiso {
 	private static final String FROMROLFUNPERM = " FROM svc_rol_funcionalidad_permiso srfp ";
 	private static final String FEC_CREACION = "FEC_CREACION";
 	private static final String ID_USUARIO_ALTA = "ID_USUARIO_ALTA";
+	private static final String ID_ROL = "ID_ROL";
+	private static final String ID_FUNCIONALIDAD = "ID_FUNCIONALIDAD";
+	private static final String ID_PERMISO = "ID_PERMISO";
 	
 	
 	public RolPermiso(RolesPermisosRequest rolesPermisosRequest) {
@@ -115,9 +118,9 @@ public DatosRequest obtenerDetalleRolPermiso() {
 		Map<String, Object> parametro = new HashMap<>();
 
 		final QueryHelper q = new QueryHelper("INSERT INTO SVC_ROL_FUNCIONALIDAD_PERMISO");
-		q.agregarParametroValues("ID_ROL", "'" + this.idRol + "'");
-		q.agregarParametroValues("ID_FUNCIONALIDAD", "'" + this.idFuncionalidad + "'");
-		q.agregarParametroValues("ID_PERMISO", "'" + this.idPermiso + "'");
+		q.agregarParametroValues(ID_ROL, "'" + this.idRol + "'");
+		q.agregarParametroValues(ID_FUNCIONALIDAD, "'" + this.idFuncionalidad + "'");
+		q.agregarParametroValues(ID_PERMISO, "'" + this.idPermiso + "'");
 		q.agregarParametroValues(CVE_ESTATUS, "" + this.estatus);
 		q.agregarParametroValues(ID_USUARIO_ALTA, "'" + this.idUsuarioAlta + "'");
 		q.agregarParametroValues(FEC_CREACION, NOW);
