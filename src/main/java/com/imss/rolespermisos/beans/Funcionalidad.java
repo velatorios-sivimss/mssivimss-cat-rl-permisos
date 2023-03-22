@@ -28,7 +28,10 @@ public class Funcionalidad {
 
 			DatosRequest request = new DatosRequest();
 			Map<String, Object> parametro = new HashMap<>();
-			String query = "SELECT ID_FUNCIONALIDAD, DES_FUNCIONALIDAD FROM svc_funcionalidad";
+			String query = "SELECT sf.ID_FUNCIONALIDAD, sf.DES_FUNCIONALIDAD FROM svc_funcionalidad sf "
+					+ " LEFT JOIN  svc_rol_funcionalidad_permiso srfp ON srfp.ID_FUNCIONALIDAD = sf.ID_FUNCIONALIDAD "
+					+ " WHERE srfp.CVE_ESTATUS = 0 "
+					+ " GROUP BY 1";
 			String encoded = DatatypeConverter.printBase64Binary(query.getBytes());
 			parametro.put(AppConstantes.QUERY, encoded);
 			request.setDatos(parametro);

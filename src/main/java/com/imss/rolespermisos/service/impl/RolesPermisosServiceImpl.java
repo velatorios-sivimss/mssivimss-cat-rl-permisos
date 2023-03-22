@@ -16,18 +16,14 @@ import org.springframework.stereotype.Service;
 
 import com.google.gson.Gson;
 import com.imss.rolespermisos.beans.Funcionalidad;
-import com.imss.rolespermisos.beans.NivelOficina;
 import com.imss.rolespermisos.beans.Permiso;
 import com.imss.rolespermisos.beans.RolPermiso;
-import com.imss.rolespermisos.beans.Velatorio;
 import com.imss.rolespermisos.exception.BadRequestException;
 import com.imss.rolespermisos.model.request.FuncionalidadPermisosDto;
 import com.imss.rolespermisos.model.request.RolesPermisosRequest;
 import com.imss.rolespermisos.model.response.FuncionalidadResponse;
-import com.imss.rolespermisos.model.response.NivelOficinaResponse;
 import com.imss.rolespermisos.model.response.PermisoResponse;
 import com.imss.rolespermisos.model.response.RolPermisoDetalleResponse;
-import com.imss.rolespermisos.model.response.VelatorioResponse;
 import com.imss.rolespermisos.service.RolesPermisosService;
 import com.imss.rolespermisos.util.AppConstantes;
 import com.imss.rolespermisos.util.ConvertirGenerico;
@@ -62,11 +58,10 @@ public class RolesPermisosServiceImpl implements RolesPermisosService {
 
 	@Override
 	public Response<Object> consultarDetalleRolPermiso(DatosRequest request, Authentication authentication) throws IOException {
-		
-		Map<String, Integer> filtros = obtenerFiltroDetalle(request);
-		RolPermiso rolPermiso= new RolPermiso();
-		rolPermiso.setIdRol(filtros.get("idRol"));
-		rolPermiso.setIdFuncionalidad(filtros.get("idFuncionalidad"));
+		Gson gson = new Gson();
+		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));		
+		RolesPermisosRequest rolesPermisosRequest = gson.fromJson(datosJson, RolesPermisosRequest.class);
+		RolPermiso rolPermiso= new RolPermiso(rolesPermisosRequest);
 		List<RolPermisoDetalleResponse> permisoResponse;
 		
 		Response<Object> response = providerRestTemplate.consumirServicio(rolPermiso.obtenerDetalleRolPermiso().getDatos(),
@@ -78,31 +73,6 @@ public class RolesPermisosServiceImpl implements RolesPermisosService {
 		return response;
 	}
 
-	@Override
-	public Response<Object> consultaNiveles(DatosRequest request, Authentication authentication) throws IOException {
-		NivelOficina nivelOficina= new NivelOficina();
-		List<NivelOficinaResponse> nivelOficinaResponses;
-		Response<Object> response = providerRestTemplate.consumirServicio(nivelOficina.obtenerNivelOficina().getDatos(),
-				urlDominioConsulta + consultaGenerica, authentication);
-		if (response.getCodigo() == 200) {
-			nivelOficinaResponses = Arrays.asList(modelMapper.map(response.getDatos(), NivelOficinaResponse[].class));
-			response.setDatos(ConvertirGenerico.convertInstanceOfObject(nivelOficinaResponses));
-		}
-		return response;
-	}
-
-	@Override
-	public Response<Object> consultaVelatorios(DatosRequest request, Authentication authentication) throws IOException {
-		Velatorio velatorio= new Velatorio();
-		List<VelatorioResponse> velatorioResponses;
-		Response<Object> response = providerRestTemplate.consumirServicio(velatorio.obtenerVelatorio().getDatos(),
-				urlDominioConsulta + consultaGenerica, authentication);
-		if (response.getCodigo() == 200) {
-			velatorioResponses = Arrays.asList(modelMapper.map(response.getDatos(), VelatorioResponse[].class));
-			response.setDatos(ConvertirGenerico.convertInstanceOfObject(velatorioResponses));
-		}
-		return response;
-	}
 	
 	@Override
 	public Response<Object> consultarPermisos(DatosRequest request, Authentication authentication) throws IOException {
@@ -233,23 +203,8 @@ public class RolesPermisosServiceImpl implements RolesPermisosService {
 	private Boolean existeParametroCofig(RolPermiso rolPermiso, Authentication authentication) throws IOException{
 		Response<Object> existe = providerRestTemplate.consumirServicio(rolPermiso.buscarRolPermiso().getDatos(), urlDominioConsulta + consultaGenerica,
 				authentication);
-		if(existe.getDatos().toString().equals("[]"))
-			return false;
-		else 
-			return true;
+		return !existe.getDatos().toString().equals("[]");
 		
 	}
 	
-	private Map<String, Integer> obtenerFiltroDetalle(DatosRequest request){
-
-		String palabra = request.getDatos().get("palabra").toString();
-		String idRol = palabra.substring(palabra.indexOf("idRol=") + 6,palabra.indexOf(","));
-		String idFun = palabra.substring(palabra.indexOf(",") + 17,palabra.length()-1);
-
-		Map<String, Integer> param = new HashMap<>();
-		param.put("idRol",Integer.parseInt(idRol));
-		param.put("idFuncionalidad",Integer.parseInt(idFun));
-		return param;
-		
-	}
 }

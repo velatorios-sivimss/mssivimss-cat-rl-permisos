@@ -13,10 +13,6 @@ public interface RolesPermisosService {
 	
 	Response<Object> consultarDetalleRolPermiso(DatosRequest request, Authentication authentication) throws IOException;
 
-	Response<Object> consultaNiveles(DatosRequest request, Authentication authentication) throws IOException;
-
-	Response<Object> consultaVelatorios(DatosRequest request, Authentication authentication) throws IOException;
-
 	Response<Object> consultarPermisos(DatosRequest request, Authentication authentication) throws IOException;
 
 	Response<Object> consultarFuncionalidades(DatosRequest request, Authentication authentication) throws IOException;

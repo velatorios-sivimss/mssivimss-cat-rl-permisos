@@ -35,19 +35,6 @@ public class RolPermisoController {
 		return rolesPermisosService.consultarDetalleRolPermiso(request,authentication);
       
 	}
-	@PostMapping("consultar/niveles")
-	public Response<Object> consultaNiveles(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
-	
-		return rolesPermisosService.consultaNiveles(request,authentication);
-      
-	}
-	
-	@PostMapping("consultar/velatorios")
-	public Response<Object> consultaVelatorios(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
-	
-		return rolesPermisosService.consultaVelatorios(request,authentication);
-      
-	}
 
 	@PostMapping("consultar/permisos")
 	public Response<Object> consultaPermisos(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
@@ -65,7 +52,7 @@ public class RolPermisoController {
 	@PostMapping("agregar/rolpermiso")
 	public Response<Object> agregar(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
 	
-		return rolesPermisosService.agregarRolPermiso(request,authentication);
+		return rolesPermisosService.actualizarRolPermiso(request,authentication);
       
 	}
 
