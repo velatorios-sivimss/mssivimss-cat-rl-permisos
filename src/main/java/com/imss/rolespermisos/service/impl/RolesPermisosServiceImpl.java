@@ -62,7 +62,7 @@ public class RolesPermisosServiceImpl implements RolesPermisosService {
 		Gson gson = new Gson();
 		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
 		RolesPermisosRequest rolesPermisosRequest = gson.fromJson(datosJson, RolesPermisosRequest.class);
-		RolPermiso rolPermiso = new RolPermiso(rolesPermisosRequest);
+		rolPermiso = new RolPermiso(rolesPermisosRequest);
 		List<RolPermisoDetalleResponse> permisoResponse;
 
 		Response<Object> response = providerRestTemplate.consumirServicio(
@@ -102,15 +102,6 @@ public class RolesPermisosServiceImpl implements RolesPermisosService {
 		return response;
 	}
 
-	@Override
-	public Response<Object> agregarRolPermiso(DatosRequest request, Authentication authentication) throws IOException {
-		Gson gson = new Gson();
-		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
-		RolesPermisosRequest rolesPermisosRequest = gson.fromJson(datosJson, RolesPermisosRequest.class);
-		RolPermiso rolPermiso = new RolPermiso(rolesPermisosRequest);
-
-		return insertaPermisos(rolPermiso, authentication);
-	}
 
 	@SuppressWarnings("unused")
 	@Override
@@ -128,7 +119,7 @@ public class RolesPermisosServiceImpl implements RolesPermisosService {
 				|| rolesPermisosRequest.getIdRol() == null) {
 			throw new BadRequestException(HttpStatus.BAD_REQUEST, "Informacion incompleta");
 		}
-		RolPermiso rolPermiso = new RolPermiso(rolesPermisosRequest);
+		rolPermiso = new RolPermiso(rolesPermisosRequest);
 
 		return actualizarPermisos(rolPermiso, authentication);
 	}
@@ -147,32 +138,6 @@ public class RolesPermisosServiceImpl implements RolesPermisosService {
 		for (PermisoResponse permiso : permisos)
 			numPermiso.add(permiso.getIdPermiso());
 		return numPermiso;
-	}
-
-	private Response<Object> insertaPermisos(RolPermiso rolPermiso, Authentication authentication) throws IOException {
-		Response<Object> temp = null;
-
-		Response<Object> listaPermisosBD = providerRestTemplate.consumirServicio(rolPermiso.obtenerPermiso().getDatos(),
-				urlDominioConsulta + consultaGenerica, authentication);
-		List<PermisoResponse> tempPermisos = Arrays
-				.asList(modelMapper.map(listaPermisosBD.getDatos(), PermisoResponse[].class));
-
-		List<Integer> listaPermisos = extraerTodosPermisos(tempPermisos);
-		List<Integer> listaPermisosRol = extraerPermisosRol(rolPermiso.getPermiso());
-
-		for (Integer permisosTemp : listaPermisos) {
-			for (Integer permiso : listaPermisosRol) {
-				rolPermiso.setIdPermiso(permisosTemp);
-				rolPermiso.setEstatus(0);
-				if (Objects.equals(permisosTemp, permiso)) {
-					rolPermiso.setEstatus(1);
-					break;
-				}
-			}
-			temp = providerRestTemplate.consumirServicio(rolPermiso.insertar().getDatos(),
-					urlDominioConsulta + "/generico/crear", authentication);
-		}
-		return temp;
 	}
 
 	@SuppressWarnings("unused")
