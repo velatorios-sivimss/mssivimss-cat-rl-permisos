@@ -63,7 +63,7 @@ public class RolPermiso {
 	public DatosRequest obtenerRolesPermisos(DatosRequest request) {
 		
 		String query = "SELECT  srfp.ID_ROL AS 'idRol', sf.DES_FUNCIONALIDAD AS funcionalidad, sr.DES_ROL AS 'nombre', sno.DES_NIVELOFICINA  AS 'nivel' "
-				+ " ,sr.CVE_ESTATUS AS 'estatus',  GROUP_CONCAT(sp.DES_PERMISO) AS permiso "
+				+ " ,srfp.CVE_ESTATUS AS 'estatus',  GROUP_CONCAT(sp.DES_PERMISO) AS permiso "
 				+ " , srfp.FEC_CREACION AS fechaCreacion "
 				+ FROMROLFUNPERM
 				+ " INNER JOIN svc_rol sr ON srfp.ID_ROL = sr.ID_ROL "
