@@ -1,7 +1,7 @@
 server:
   port: 8080
   servlet:
-    contextPath: /ms-rolespermisos
+    contextPath: /ms-flujo
 spring:
   mvc:
     pathmatch:
@@ -35,6 +35,6 @@ endpoints:
    dominio-consulta: http://localhost:8094/mssivimss-mod-catalogos
 
 jwt:
-  secretkey-rolespermisos: funcionamuybien
+  secretkey-flujo: funcionamuybien
   secretkey-dominios: funcionamuybiendominio
   expiration-milliseconds: 360
