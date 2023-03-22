@@ -147,7 +147,8 @@ public DatosRequest obtenerDetalleRolPermiso() {
 		}
 		q.addWhere("ID_ROL = " + this.idRol);
 		q.addWhere("AND ID_FUNCIONALIDAD = " + this.idFuncionalidad);
-		q.addWhere("AND ID_PERMISO = " + this.idPermiso);
+		if(this.estatus == 1)
+			q.addWhere("AND ID_PERMISO = " + this.idPermiso);
 		String query = q.obtenerQueryActualizar();
 		String encoded = DatatypeConverter.printBase64Binary(query.getBytes());
 		parametro.put(AppConstantes.QUERY, encoded);
@@ -155,28 +156,6 @@ public DatosRequest obtenerDetalleRolPermiso() {
 		return request;
 	}
 
-	public DatosRequest actualizarAInactivo() {
-		DatosRequest request = new DatosRequest();
-		Map<String, Object> parametro = new HashMap<>();
-
-		final QueryHelper q = new QueryHelper("UPDATE SVC_ROL_FUNCIONALIDAD_PERMISO");
-		q.agregarParametroValues(CVE_ESTATUS, "" + this.estatus);
-		if (this.idUsuarioModifica == null) {
-			q.agregarParametroValues(ID_USUARIO_ALTA, "'" + this.idUsuarioAlta + "'");
-			q.agregarParametroValues(FEC_CREACION, NOW);
-		}else {
-			q.agregarParametroValues("ID_USUARIO_MODIFICA", "'" + this.idUsuarioModifica + "'");
-			q.agregarParametroValues("FEC_ACTUALIZACION", NOW);
-		}
-		q.addWhere("ID_ROL = " + this.idRol);
-		q.addWhere("AND ID_FUNCIONALIDAD = " + this.idFuncionalidad);
-		String query = q.obtenerQueryActualizar();
-		String encoded = DatatypeConverter.printBase64Binary(query.getBytes());
-		parametro.put(AppConstantes.QUERY, encoded);
-		request.setDatos(parametro);
-		return request;
-	}
-	
 	
 
 	public DatosRequest obtenerPermiso() {
