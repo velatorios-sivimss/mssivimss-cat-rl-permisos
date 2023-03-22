@@ -15,8 +15,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import com.google.gson.Gson;
-import com.imss.rolespermisos.beans.Funcionalidad;
-import com.imss.rolespermisos.beans.Permiso;
 import com.imss.rolespermisos.beans.RolPermiso;
 import com.imss.rolespermisos.exception.BadRequestException;
 import com.imss.rolespermisos.model.request.FuncionalidadPermisosDto;
@@ -39,7 +37,8 @@ public class RolesPermisosServiceImpl implements RolesPermisosService {
 
 	@Autowired
 	private ProviderServiceRestTemplate providerRestTemplate;
-
+	
+	RolPermiso rolPermiso= new RolPermiso();
 
 	@Autowired
 	private ModelMapper modelMapper;
@@ -51,7 +50,7 @@ public class RolesPermisosServiceImpl implements RolesPermisosService {
 	
 	@Override
 	public Response<Object> consultarRolesPermisos (DatosRequest request, Authentication authentication) throws IOException {
-		RolPermiso rolPermiso= new RolPermiso();
+		
 		return providerRestTemplate.consumirServicio(rolPermiso.obtenerRolesPermisos(request).getDatos(), urlDominioConsulta + "/generico/paginado",
 				authentication);
 	}
@@ -76,9 +75,9 @@ public class RolesPermisosServiceImpl implements RolesPermisosService {
 	
 	@Override
 	public Response<Object> consultarPermisos(DatosRequest request, Authentication authentication) throws IOException {
-		Permiso permisos= new Permiso();
+	
 		List<PermisoResponse> permisoResponses;
-		Response<Object> response = providerRestTemplate.consumirServicio(permisos.obtenerPermiso().getDatos(),
+		Response<Object> response = providerRestTemplate.consumirServicio(rolPermiso.obtenerPermiso().getDatos(),
 				urlDominioConsulta + consultaGenerica, authentication);
 		if (response.getCodigo() == 200) {
 			permisoResponses = Arrays.asList(modelMapper.map(response.getDatos(), PermisoResponse[].class));
@@ -89,9 +88,9 @@ public class RolesPermisosServiceImpl implements RolesPermisosService {
 
 	@Override
 	public Response<Object> consultarFuncionalidades(DatosRequest request, Authentication authentication) throws IOException {
-		Funcionalidad funcionalidad= new Funcionalidad();
+	
 		List<FuncionalidadResponse> funcionalidadResponses;
-		Response<Object> response = providerRestTemplate.consumirServicio(funcionalidad.obtenerFuncionalidad().getDatos(),
+		Response<Object> response = providerRestTemplate.consumirServicio(rolPermiso.obtenerFuncionalidad().getDatos(),
 				urlDominioConsulta + consultaGenerica, authentication);
 		if (response.getCodigo() == 200) {
 			funcionalidadResponses = Arrays.asList(modelMapper.map(response.getDatos(), FuncionalidadResponse[].class));
@@ -145,9 +144,9 @@ public class RolesPermisosServiceImpl implements RolesPermisosService {
 	 }
 	private Response<Object> insertaPermisos(RolPermiso rolPermiso, Authentication authentication) throws IOException{
 		Response<Object> temp = null ;
-		Permiso permisos= new Permiso();
+	
 		
-		Response<Object> listaPermisosBD = providerRestTemplate.consumirServicio(permisos.obtenerPermiso().getDatos(), urlDominioConsulta + consultaGenerica,
+		Response<Object> listaPermisosBD = providerRestTemplate.consumirServicio(rolPermiso.obtenerPermiso().getDatos(), urlDominioConsulta + consultaGenerica,
 				authentication);		
 		List<PermisoResponse> tempPermisos = Arrays.asList(modelMapper.map(listaPermisosBD.getDatos(), PermisoResponse[].class));
 		
@@ -173,8 +172,8 @@ public class RolesPermisosServiceImpl implements RolesPermisosService {
 	@SuppressWarnings("unused")
 	private Response<Object> actualizarPermisos(RolPermiso rolPermiso, Authentication authentication) throws IOException{
 		Response<Object> temp = null ;
-		Permiso permisos= new Permiso();
-		Response<Object> listaPermisosBD = providerRestTemplate.consumirServicio(permisos.obtenerPermiso().getDatos(), urlDominioConsulta + consultaGenerica,
+	
+		Response<Object> listaPermisosBD = providerRestTemplate.consumirServicio(rolPermiso.obtenerPermiso().getDatos(), urlDominioConsulta + consultaGenerica,
 				authentication);		
 		List<PermisoResponse> tempPermisos = Arrays.asList(modelMapper.map(listaPermisosBD.getDatos(), PermisoResponse[].class));
 		List<Integer> listaPermisos = extraerTodosPermisos(tempPermisos);

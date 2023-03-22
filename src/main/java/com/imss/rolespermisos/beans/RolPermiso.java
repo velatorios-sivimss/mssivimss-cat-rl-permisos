@@ -174,4 +174,41 @@ public DatosRequest obtenerDetalleRolPermiso() {
 		return request;
 	}
 	
+	
+
+	public DatosRequest obtenerPermiso() {
+
+			DatosRequest request = new DatosRequest();
+			Map<String, Object> parametro = new HashMap<>();
+			String query = "SELECT ID_PERMISO, DES_PERMISO FROM SVC_PERMISO";
+			String encoded = DatatypeConverter.printBase64Binary(query.getBytes());
+			parametro.put(AppConstantes.QUERY, encoded);
+			request.setDatos(parametro);
+			return request;
+		}
+
+	public DatosRequest obtenerPermisoId() {
+
+			DatosRequest request = new DatosRequest();
+			Map<String, Object> parametro = new HashMap<>();
+			String query = "SELECT ID_PERMISO AS id FROM SVC_PERMISO";
+			String encoded = DatatypeConverter.printBase64Binary(query.getBytes());
+			parametro.put(AppConstantes.QUERY, encoded);
+			request.setDatos(parametro);
+			return request;
+		}
+
+	public DatosRequest obtenerFuncionalidad() {
+
+			DatosRequest request = new DatosRequest();
+			Map<String, Object> parametro = new HashMap<>();
+			String query = "SELECT sf.ID_FUNCIONALIDAD, sf.DES_FUNCIONALIDAD FROM svc_funcionalidad sf "
+					+ " LEFT JOIN  svc_rol_funcionalidad_permiso srfp ON srfp.ID_FUNCIONALIDAD = sf.ID_FUNCIONALIDAD "
+					+ " WHERE srfp.CVE_ESTATUS = 0 "
+					+ " GROUP BY 1";
+			String encoded = DatatypeConverter.printBase64Binary(query.getBytes());
+			parametro.put(AppConstantes.QUERY, encoded);
+			request.setDatos(parametro);
+			return request;
+		}
 }
