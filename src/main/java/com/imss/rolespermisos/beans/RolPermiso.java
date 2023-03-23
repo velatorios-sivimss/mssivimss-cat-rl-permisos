@@ -36,7 +36,7 @@ public class RolPermiso {
 	private Integer idUsuarioAlta;
 	private Integer idUsuarioModifica;
 	private String fechaModifica;
-	private static final String NOW = "NOW()";
+	private static final String NOW = "CURRENT_TIMESTAMP()";
 	private static final String CVE_ESTATUS = "CVE_ESTATUS";
 	private static final String FROMROLFUNPERM = " FROM svc_rol_funcionalidad_permiso srfp ";
 	private static final String FEC_CREACION = "FEC_CREACION";

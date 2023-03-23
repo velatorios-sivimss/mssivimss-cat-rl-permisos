@@ -29,8 +29,17 @@ import com.imss.rolespermisos.util.Response;
 @Service
 public class RolesPermisosServiceImpl implements RolesPermisosService {
 
-	@Value("${endpoints.dominio-consulta}")
-	private String urlDominioConsulta;
+	@Value("${endpoints.consulta-generica-paginado}")
+	private String urlConsultaGenericoPaginado;
+	
+	@Value("${endpoints.consulta-generica}")
+	private String urlConsultaGenerica;
+	
+	@Value("${endpoints.guardar-datos}")
+	private String urlGuardarDatos;
+	
+	@Value("${endpoints.actualizar-datos}")
+	private String urlActualizarDatos;
 
 	@Autowired
 	private ProviderServiceRestTemplate providerRestTemplate;
@@ -40,14 +49,13 @@ public class RolesPermisosServiceImpl implements RolesPermisosService {
 	@Autowired
 	private ModelMapper modelMapper;
 
-	private String consultaGenerica = "/generico/consulta";
-
+	
 	@Override
 	public Response<Object> consultarRolesPermisos(DatosRequest request, Authentication authentication)
 			throws IOException {
 
 		return providerRestTemplate.consumirServicio(rolPermiso.obtenerRolesPermisos(request).getDatos(),
-				urlDominioConsulta + "/generico/paginado", authentication);
+				urlConsultaGenericoPaginado, authentication);
 	}
 
 	@Override
@@ -60,7 +68,7 @@ public class RolesPermisosServiceImpl implements RolesPermisosService {
 		List<RolPermisoDetalleResponse> permisoResponse;
 
 		Response<Object> response = providerRestTemplate.consumirServicio(
-				rolPermiso.obtenerDetalleRolPermiso().getDatos(), urlDominioConsulta + consultaGenerica,
+				rolPermiso.obtenerDetalleRolPermiso().getDatos(), urlConsultaGenerica,
 				authentication);
 		if (response.getCodigo() == 200) {
 			permisoResponse = Arrays.asList(modelMapper.map(response.getDatos(), RolPermisoDetalleResponse[].class));
@@ -74,7 +82,7 @@ public class RolesPermisosServiceImpl implements RolesPermisosService {
 
 		List<PermisoResponse> permisoResponses;
 		Response<Object> response = providerRestTemplate.consumirServicio(rolPermiso.obtenerPermiso().getDatos(),
-				urlDominioConsulta + consultaGenerica, authentication);
+				urlConsultaGenerica, authentication);
 		if (response.getCodigo() == 200) {
 			permisoResponses = Arrays.asList(modelMapper.map(response.getDatos(), PermisoResponse[].class));
 			response.setDatos(ConvertirGenerico.convertInstanceOfObject(permisoResponses));
@@ -88,7 +96,7 @@ public class RolesPermisosServiceImpl implements RolesPermisosService {
 
 		List<FuncionalidadResponse> funcionalidadResponses;
 		Response<Object> response = providerRestTemplate.consumirServicio(rolPermiso.obtenerFuncionalidad().getDatos(),
-				urlDominioConsulta + consultaGenerica, authentication);
+				urlConsultaGenerica, authentication);
 		if (response.getCodigo() == 200) {
 			funcionalidadResponses = Arrays.asList(modelMapper.map(response.getDatos(), FuncionalidadResponse[].class));
 			response.setDatos(ConvertirGenerico.convertInstanceOfObject(funcionalidadResponses));
@@ -133,18 +141,18 @@ public class RolesPermisosServiceImpl implements RolesPermisosService {
 
 		rolPermiso.setEstatus(0);
 		providerRestTemplate.consumirServicio(rolPermiso.actualizar().getDatos(),
-				urlDominioConsulta + "/generico/actualizar", authentication);
+				urlActualizarDatos, authentication);
 		for (Integer permiso : listaPermisosRol) {
 			rolPermiso.setIdPermiso(permiso);
 			if (Boolean.TRUE.equals(existeParametroCofig(rolPermiso, authentication))) {
 				rolPermiso.setEstatus(1);
 				temp = providerRestTemplate.consumirServicio(rolPermiso.actualizar().getDatos(),
-						urlDominioConsulta + "/generico/actualizar", authentication);
+						urlActualizarDatos, authentication);
 			} else {
 				rolPermiso.setIdUsuarioAlta(rolPermiso.getIdUsuarioModifica());
 				rolPermiso.setEstatus(1);
 				temp = providerRestTemplate.consumirServicio(rolPermiso.insertar().getDatos(),
-						urlDominioConsulta + "/generico/crear", authentication);
+						urlGuardarDatos, authentication);
 			}
 		}
 		return temp;
@@ -152,7 +160,7 @@ public class RolesPermisosServiceImpl implements RolesPermisosService {
 
 	private Boolean existeParametroCofig(RolPermiso rolPermiso, Authentication authentication) throws IOException {
 		Response<Object> existe = providerRestTemplate.consumirServicio(rolPermiso.buscarRolPermiso().getDatos(),
-				urlDominioConsulta + consultaGenerica, authentication);
+				urlConsultaGenerica, authentication);
 		return !existe.getDatos().toString().equals("[]");
 
 	}
