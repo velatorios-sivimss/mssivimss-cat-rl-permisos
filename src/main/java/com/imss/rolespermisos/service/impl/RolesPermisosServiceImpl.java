@@ -51,7 +51,7 @@ public class RolesPermisosServiceImpl implements RolesPermisosService {
 
 	
 	@Override
-	public Response<Object> consultarRolesPermisos(DatosRequest request, Authentication authentication)
+	public Response<?> consultarRolesPermisos(DatosRequest request, Authentication authentication)
 			throws IOException {
 
 		return providerRestTemplate.consumirServicio(rolPermiso.obtenerRolesPermisos(request).getDatos(),
@@ -59,7 +59,7 @@ public class RolesPermisosServiceImpl implements RolesPermisosService {
 	}
 
 	@Override
-	public Response<Object> consultarDetalleRolPermiso(DatosRequest request, Authentication authentication)
+	public Response<?> consultarDetalleRolPermiso(DatosRequest request, Authentication authentication)
 			throws IOException {
 		Gson gson = new Gson();
 		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
@@ -67,7 +67,7 @@ public class RolesPermisosServiceImpl implements RolesPermisosService {
 		rolPermiso = new RolPermiso(rolesPermisosRequest);
 		List<RolPermisoDetalleResponse> permisoResponse;
 
-		Response<Object> response = providerRestTemplate.consumirServicio(
+		Response<?> response = providerRestTemplate.consumirServicio(
 				rolPermiso.obtenerDetalleRolPermiso().getDatos(), urlConsultaGenerica,
 				authentication);
 		if (response.getCodigo() == 200) {
@@ -78,10 +78,10 @@ public class RolesPermisosServiceImpl implements RolesPermisosService {
 	}
 
 	@Override
-	public Response<Object> consultarPermisos(DatosRequest request, Authentication authentication) throws IOException {
+	public Response<?> consultarPermisos(DatosRequest request, Authentication authentication) throws IOException {
 
 		List<PermisoResponse> permisoResponses;
-		Response<Object> response = providerRestTemplate.consumirServicio(rolPermiso.obtenerPermiso().getDatos(),
+		Response<?> response = providerRestTemplate.consumirServicio(rolPermiso.obtenerPermiso().getDatos(),
 				urlConsultaGenerica, authentication);
 		if (response.getCodigo() == 200) {
 			permisoResponses = Arrays.asList(modelMapper.map(response.getDatos(), PermisoResponse[].class));
@@ -91,11 +91,11 @@ public class RolesPermisosServiceImpl implements RolesPermisosService {
 	}
 
 	@Override
-	public Response<Object> consultarFuncionalidades(DatosRequest request, Authentication authentication)
+	public Response<?> consultarFuncionalidades(DatosRequest request, Authentication authentication)
 			throws IOException {
 
 		List<FuncionalidadResponse> funcionalidadResponses;
-		Response<Object> response = providerRestTemplate.consumirServicio(rolPermiso.obtenerFuncionalidad().getDatos(),
+		Response<?> response = providerRestTemplate.consumirServicio(rolPermiso.obtenerFuncionalidad().getDatos(),
 				urlConsultaGenerica, authentication);
 		if (response.getCodigo() == 200) {
 			funcionalidadResponses = Arrays.asList(modelMapper.map(response.getDatos(), FuncionalidadResponse[].class));
@@ -106,7 +106,7 @@ public class RolesPermisosServiceImpl implements RolesPermisosService {
 
 
 	@Override
-	public Response<Object> actualizarRolPermiso(DatosRequest request, Authentication authentication)
+	public Response<?> actualizarRolPermiso(DatosRequest request, Authentication authentication)
 			throws IOException {
 		Gson gson = new Gson();
 
@@ -133,9 +133,9 @@ public class RolesPermisosServiceImpl implements RolesPermisosService {
 	}
 
 
-	private Response<Object> actualizarPermisos(RolPermiso rolPermiso, Authentication authentication)
+	private Response<?> actualizarPermisos(RolPermiso rolPermiso, Authentication authentication)
 			throws IOException {
-		Response<Object> temp = null;
+		Response<?> temp = null;
 
 		List<Integer> listaPermisosRol = extraerPermisosRol(rolPermiso.getPermiso());
 
@@ -159,7 +159,7 @@ public class RolesPermisosServiceImpl implements RolesPermisosService {
 	}
 
 	private Boolean existeParametroCofig(RolPermiso rolPermiso, Authentication authentication) throws IOException {
-		Response<Object> existe = providerRestTemplate.consumirServicio(rolPermiso.buscarRolPermiso().getDatos(),
+		Response<?> existe = providerRestTemplate.consumirServicio(rolPermiso.buscarRolPermiso().getDatos(),
 				urlConsultaGenerica, authentication);
 		return !existe.getDatos().toString().equals("[]");
 
