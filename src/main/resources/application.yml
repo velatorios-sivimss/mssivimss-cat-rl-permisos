@@ -30,9 +30,11 @@ logos:
   msit_logo_sistema: /sintrans_data/LOGOS/logoSistema.png
 
 endpoints:
-   consulta-ooads: http://localhost:8090/dominio/
-   paginado-unidad: http://localhost:8090/dominio/ooad/paginacion
    dominio-consulta: http://localhost:8094/mssivimss-mod-catalogos
+   consulta-generica : http://localhost:8094/mssivimss-mod-catalogos/generico/consulta
+   consulta-generica-paginado: http://localhost:8094/mssivimss-mod-catalogos/generico/paginado
+   guardar-datos: http://localhost:8094/mssivimss-mod-catalogos/generico/crear
+   actualizar-datos: http://localhost:8094/mssivimss-mod-catalogos/generico/actualizar
 
 jwt:
   secretkey-rolespermisos: funcionamuybien
