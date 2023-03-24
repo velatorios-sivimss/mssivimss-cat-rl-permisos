@@ -17,6 +17,8 @@ public interface RolesPermisosService {
 
 	Response<?> consultarFuncionalidades(DatosRequest request, Authentication authentication) throws IOException;
 
+	Response<?> agregarRolPermiso(DatosRequest request, Authentication authentication) throws IOException;
+	
 	Response<?> actualizarRolPermiso(DatosRequest request, Authentication authentication) throws IOException;
 
 }

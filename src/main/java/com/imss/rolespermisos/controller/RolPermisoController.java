@@ -82,7 +82,7 @@ public class RolPermisoController {
 	@TimeLimiter(name = "msflujo")
 	public CompletableFuture<?> agregar(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
 	
-		Response<?> response =  rolesPermisosService.actualizarRolPermiso(request,authentication);
+		Response<?> response =  rolesPermisosService.agregarRolPermiso(request,authentication);
 		return CompletableFuture.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
       
 	}

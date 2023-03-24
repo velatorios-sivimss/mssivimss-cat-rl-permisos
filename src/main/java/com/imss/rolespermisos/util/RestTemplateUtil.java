@@ -16,8 +16,9 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
-import lombok.extern.slf4j.Slf4j;
 
+
+import lombok.extern.slf4j.Slf4j;
 
 @Component
 @Slf4j
@@ -196,4 +197,3 @@ public class RestTemplateUtil {
 		return responseBody;
 	}
 }
-

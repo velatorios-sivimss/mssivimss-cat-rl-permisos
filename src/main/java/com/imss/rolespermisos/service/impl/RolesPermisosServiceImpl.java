@@ -16,6 +16,7 @@ import com.google.gson.Gson;
 import com.imss.rolespermisos.beans.RolPermiso;
 import com.imss.rolespermisos.exception.BadRequestException;
 import com.imss.rolespermisos.model.request.RolesPermisosRequest;
+import com.imss.rolespermisos.model.request.UsuarioDto;
 import com.imss.rolespermisos.model.response.FuncionalidadResponse;
 import com.imss.rolespermisos.model.response.PermisoResponse;
 import com.imss.rolespermisos.model.response.RolPermisoDetalleResponse;
@@ -23,6 +24,7 @@ import com.imss.rolespermisos.service.RolesPermisosService;
 import com.imss.rolespermisos.util.AppConstantes;
 import com.imss.rolespermisos.util.ConvertirGenerico;
 import com.imss.rolespermisos.util.DatosRequest;
+import com.imss.rolespermisos.util.MensajeResponseUtil;
 import com.imss.rolespermisos.util.ProviderServiceRestTemplate;
 import com.imss.rolespermisos.util.Response;
 
@@ -49,13 +51,14 @@ public class RolesPermisosServiceImpl implements RolesPermisosService {
 	@Autowired
 	private ModelMapper modelMapper;
 
+	private static final String _045 = "45";
 	
 	@Override
 	public Response<?> consultarRolesPermisos(DatosRequest request, Authentication authentication)
 			throws IOException {
 
-		return providerRestTemplate.consumirServicio(rolPermiso.obtenerRolesPermisos(request).getDatos(),
-				urlConsultaGenericoPaginado, authentication);
+		return MensajeResponseUtil.mensajeConsultaResponse( providerRestTemplate.consumirServicio(rolPermiso.obtenerRolesPermisos(request).getDatos(),
+				urlConsultaGenericoPaginado, authentication), _045);
 	}
 
 	@Override
@@ -74,7 +77,7 @@ public class RolesPermisosServiceImpl implements RolesPermisosService {
 			permisoResponse = Arrays.asList(modelMapper.map(response.getDatos(), RolPermisoDetalleResponse[].class));
 			response.setDatos(ConvertirGenerico.convertInstanceOfObject(permisoResponse));
 		}
-		return response;
+		return MensajeResponseUtil.mensajeConsultaResponse( response, _045);
 	}
 
 	@Override
@@ -108,8 +111,8 @@ public class RolesPermisosServiceImpl implements RolesPermisosService {
 	@Override
 	public Response<?> actualizarRolPermiso(DatosRequest request, Authentication authentication)
 			throws IOException {
-		Gson gson = new Gson();
 
+		Gson gson = new Gson();
 		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
 
 		RolesPermisosRequest rolesPermisosRequest = gson.fromJson(datosJson, RolesPermisosRequest.class);
@@ -120,9 +123,28 @@ public class RolesPermisosServiceImpl implements RolesPermisosService {
 		}
 		rolPermiso = new RolPermiso(rolesPermisosRequest);
 
-		return actualizarPermisos(rolPermiso, authentication);
+		String numeroMensaje  = "18";
+		return actualizarPermisos(rolPermiso, authentication, numeroMensaje);
 	}
 
+	@Override
+	public Response<?> agregarRolPermiso(DatosRequest request, Authentication authentication)
+			throws IOException {
+
+		Gson gson = new Gson();
+		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
+
+		RolesPermisosRequest rolesPermisosRequest = gson.fromJson(datosJson, RolesPermisosRequest.class);
+
+		if (rolesPermisosRequest.getIdFuncionalidad() == null || rolesPermisosRequest.getPermiso() == null
+				|| rolesPermisosRequest.getIdRol() == null) {
+			throw new BadRequestException(HttpStatus.BAD_REQUEST, "Informacion incompleta");
+		}
+		rolPermiso = new RolPermiso(rolesPermisosRequest);
+
+		String numeroMensaje  = "30";
+		return agregarPermisos(rolPermiso, authentication, numeroMensaje);
+	}
 	private List<Integer> extraerPermisosRol(String cadena) {
 		ArrayList<Integer> num = new ArrayList<>();
 		Matcher encontrar = Pattern.compile("\\d+").matcher(cadena);
@@ -133,27 +155,51 @@ public class RolesPermisosServiceImpl implements RolesPermisosService {
 	}
 
 
-	private Response<?> actualizarPermisos(RolPermiso rolPermiso, Authentication authentication)
+	private Response<?> agregarPermisos(RolPermiso rolPermiso, Authentication authentication, String numeroMensaje)
 			throws IOException {
 		Response<?> temp = null;
 
+		Gson gson = new Gson();
+		UsuarioDto usuarioDto = gson.fromJson((String) authentication.getPrincipal(), UsuarioDto.class);
 		List<Integer> listaPermisosRol = extraerPermisosRol(rolPermiso.getPermiso());
 
 		rolPermiso.setEstatus(0);
+		rolPermiso.setIdUsuarioModifica(usuarioDto.getIdUsuario());
 		providerRestTemplate.consumirServicio(rolPermiso.actualizar().getDatos(),
 				urlActualizarDatos, authentication);
 		for (Integer permiso : listaPermisosRol) {
 			rolPermiso.setIdPermiso(permiso);
 			if (Boolean.TRUE.equals(existeParametroCofig(rolPermiso, authentication))) {
 				rolPermiso.setEstatus(1);
-				temp = providerRestTemplate.consumirServicio(rolPermiso.actualizar().getDatos(),
-						urlActualizarDatos, authentication);
+				rolPermiso.setIdUsuarioModifica(usuarioDto.getIdUsuario());
+				temp = MensajeResponseUtil.mensajeResponse(providerRestTemplate.consumirServicio(rolPermiso.actualizar().getDatos(),
+						urlActualizarDatos, authentication), numeroMensaje);
 			} else {
-				rolPermiso.setIdUsuarioAlta(rolPermiso.getIdUsuarioModifica());
+				rolPermiso.setIdUsuarioAlta(usuarioDto.getIdUsuario());
 				rolPermiso.setEstatus(1);
-				temp = providerRestTemplate.consumirServicio(rolPermiso.insertar().getDatos(),
-						urlGuardarDatos, authentication);
+				temp = MensajeResponseUtil.mensajeResponse(providerRestTemplate.consumirServicio(rolPermiso.insertar().getDatos(),
+						urlGuardarDatos, authentication), numeroMensaje);
 			}
+		}
+		return temp;
+	}
+
+	private Response<?> actualizarPermisos(RolPermiso rolPermiso, Authentication authentication, String numeroMensaje)
+			throws IOException {
+		Response<?> temp = null;
+
+		Gson gson = new Gson();
+		UsuarioDto usuarioDto = gson.fromJson((String) authentication.getPrincipal(), UsuarioDto.class);
+		List<Integer> listaPermisosRol = extraerPermisosRol(rolPermiso.getPermiso());
+		rolPermiso.setEstatus(0);
+		rolPermiso.setIdUsuarioModifica(usuarioDto.getIdUsuario());
+		providerRestTemplate.consumirServicio(rolPermiso.actualizar().getDatos(), urlActualizarDatos, authentication);
+		for (Integer permiso : listaPermisosRol) {
+			rolPermiso.setIdPermiso(permiso);
+				rolPermiso.setEstatus(1);
+				rolPermiso.setIdUsuarioModifica(usuarioDto.getIdUsuario());
+				temp = providerRestTemplate.consumirServicio(rolPermiso.actualizar().getDatos(), urlActualizarDatos, authentication);
+				temp =	MensajeResponseUtil.mensajeResponse( temp, numeroMensaje);
 		}
 		return temp;
 	}
