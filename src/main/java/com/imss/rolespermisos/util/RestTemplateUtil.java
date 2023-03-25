@@ -1,8 +1,10 @@
 package com.imss.rolespermisos.util;
 
+
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -22,179 +24,176 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class RestTemplateUtil {
 
-    private final RestTemplate restTemplate;
+	private final RestTemplate restTemplate;
 
-    public RestTemplateUtil(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
-    }
+	public RestTemplateUtil(RestTemplate restTemplate) {
+		this.restTemplate = restTemplate;
+	}
 
-    /**
-     * Env&iacute;a una petici&oacute;n con Body.
-     *
-     * @param url
-     * @param clazz
-     * @return
-     */
-    @SuppressWarnings("unchecked")
-	public Response<Object> sendPostRequestByteArray(String url, EnviarDatosRequest body, Class<?> clazz) throws IOException {
-    	Response<Object> responseBody = new Response<>();
-        HttpHeaders headers = RestTemplateUtil.createHttpHeaders();
+	/**
+	 * Env&iacute;a una petici&oacute;n con Body.
+	 *
+	 * @param url
+	 * @param clazz
+	 * @return
+	 */
+	public Response<Object> sendPostRequestByteArray(String url, EnviarDatosRequest body, Class<Object> clazz)
+			throws IOException {
+		Response<Object> responseBody = new Response<>();
+		HttpHeaders headers = RestTemplateUtil.createHttpHeaders();
 
-        HttpEntity<Object> request = new HttpEntity<>(body, headers);
-        ResponseEntity<?> responseEntity = null;
-        try {
-            responseEntity = restTemplate
-                    .postForEntity(
-                            url,
-                            request,
-                            clazz
-                    );
-            if (responseEntity.getStatusCode() == HttpStatus.OK &&
-                    responseEntity.getBody() != null) {
-                //noinspection unchecked
-                responseBody = (Response<Object>) responseEntity.getBody();
-            } else {
-                throw new IOException("Ha ocurrido un error al enviar");
-            }
-        } catch (IOException ioException) {
-            throw ioException;
-        } catch (Exception e) {
-            log.error("Fallo al consumir el servicio, {}", e.getMessage());
-            responseBody.setCodigo(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            responseBody.setError(true);
-            responseBody.setMensaje(e.getMessage());
-        }
+		HttpEntity<Object> request = new HttpEntity<>(body, headers);
+		ResponseEntity<Object> responseEntity = null;
+		try {
+			responseEntity = restTemplate.postForEntity(url, request, clazz);
+			if (responseEntity.getStatusCode() == HttpStatus.OK && responseEntity.getBody() != null) {
+				// noinspection unchecked
+				responseBody = (Response<Object>) responseEntity.getBody();
+			} else {
+				throw new IOException("Ha ocurrido un error al enviar");
+			}
+		} catch (IOException ioException) {
+			throw ioException;
+		} catch (Exception e) {
+			log.error("Fallo al consumir el servicio, {}", e.getMessage());
+			responseBody.setCodigo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+			responseBody.setError(true);
+			responseBody.setMensaje(e.getMessage());
+		}
 
-        return responseBody;
-    }
-    
-    /**
-     * Env&iacute;a una petici&oacute;n con Body y token.
-     *
-     * @param url
-     * @param clazz
-     * @return
-     */
-    @SuppressWarnings("unchecked")
-	public Response<Object> sendPostRequestByteArrayToken(String url, EnviarDatosRequest body, String subject, Class<?> clazz) throws IOException {
-    	Response<Object> responseBody = new Response<>();
-    	HttpHeaders headers = RestTemplateUtil.createHttpHeadersToken(subject);
-    	
-    	HttpEntity<Object> request = new HttpEntity<>(body, headers);
-    	ResponseEntity<?> responseEntity = null;
-    	try {
-    		responseEntity = restTemplate
-    				.postForEntity(
-    						url,
-    						request,
-    						clazz
-    						);
-    		if (responseEntity.getStatusCode() == HttpStatus.OK &&
-    				responseEntity.getBody() != null) {
-    			//noinspection unchecked
-    			responseBody = (Response<Object>) responseEntity.getBody();
-    		} else {
-    			throw new IOException("Ha ocurrido un error al enviar");
-    		}
-    	} catch (IOException ioException) {
-    		throw ioException;
-    	} catch (Exception e) {
-    		log.error("Fallo al consumir el servicio, {}", e.getMessage());
-    		responseBody.setCodigo(HttpStatus.INTERNAL_SERVER_ERROR.value());
-    		responseBody.setError(true);
-    		responseBody.setMensaje(e.getMessage());
-    	}
-    	
-    	return responseBody;
-    }
-    
+		return responseBody;
+	}
 
-    /**
-     * Crea los headers para la petici&oacute;n
-     * falta agregar el tema de seguridad para las peticiones
-     *
-     * @return
-     */
-    private static HttpHeaders createHttpHeaders() {
-        HttpHeaders header = new HttpHeaders();
-        header.setContentType(MediaType.APPLICATION_JSON);
-        header.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-        return header;
-    }
-    
-    /**
-     * Crea los headers para la petici&oacute;n con token
-     *
-     * @return
-     */
-    private static HttpHeaders createHttpHeadersToken(String subject) {
-        HttpHeaders header = new HttpHeaders();
-        header.setContentType(MediaType.APPLICATION_JSON);
-        header.set("Authorization", "Bearer "+subject);
+	/**
+	 * Env&iacute;a una petici&oacute;n con Body y token.
+	 *
+	 * @param url
+	 * @param class1
+	 * @return
+	 */
+	public Response<Object> sendPostRequestByteArrayToken(String url, EnviarDatosRequest body, String subject,
+			Class<?> class1) throws IOException {
+		Response<Object> responseBody = new Response<>();
+		HttpHeaders headers = RestTemplateUtil.createHttpHeadersToken(subject);
 
-        header.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-        return header;
-    }
-    
-    /////////////////////////////////////////////////////peticion con archivos
-    /**
-     * Crea los headers para la petici&oacute;n con token
-     *
-     * @return
-     */
-    /**
-     * Env&iacute;a una petici&oacute;n con Body, archivos y token.
-     *
-     * @param url
-     * @param clazz
-     * @return
-     */
-    @SuppressWarnings("unchecked")
-	public Response<Object> sendPostRequestByteArrayArchviosToken(String url, EnviarDatosArchivosRequest body, String subject, Class<?> clazz) throws IOException {
-    	Response<Object> responseBody = new Response<>();
-    	HttpHeaders headers = RestTemplateUtil.createHttpHeadersArchivosToken(subject);
-    
-    	ResponseEntity<Object> responseEntity = null;
-    	try {
-    	
-    	LinkedMultiValueMap<String, Object> parts = new LinkedMultiValueMap<>();
-    	
-    	for (MultipartFile file : body.getArchivos()) {
-            if (!file.isEmpty()) {
-            	parts.add("files", new MultipartInputStreamFileResource(file.getInputStream(), file.getOriginalFilename()));
-            }
-        }
-    	
-    	parts.add("datos", body.getDatos());
-    	HttpEntity<LinkedMultiValueMap<String, Object>> request = new 
-    			HttpEntity<>(parts, headers);
-    		
-    		responseEntity = (ResponseEntity<Object>) restTemplate.postForEntity(url,request,clazz);
-    		if (responseEntity.getStatusCode() == HttpStatus.OK &&
-    				responseEntity.getBody() != null) {
-    			//noinspection unchecked
-    			responseBody = (Response<Object>) responseEntity.getBody();
-    		} else {
-    			throw new IOException("Ha ocurrido un error al enviar");
-    		}
-    	} catch (IOException ioException) {
-    		throw ioException;
-    	} catch (Exception e) {
-    		log.error("Fallo al consumir el servicio, {}", e.getMessage());
-    		responseBody.setCodigo(HttpStatus.INTERNAL_SERVER_ERROR.value());
-    		responseBody.setError(true);
-    		responseBody.setMensaje(e.getMessage());
-    	}
-    	
-    	return responseBody;
-    }
-    
-    private static HttpHeaders createHttpHeadersArchivosToken(String subject) {
-    	    	
-        HttpHeaders header = new HttpHeaders();
-        header.setContentType(MediaType.MULTIPART_FORM_DATA);
-        header.setAccept(Arrays.asList(MediaType.MULTIPART_FORM_DATA,MediaType.APPLICATION_JSON));
-        header.set("Authorization", "Bearer "+subject);
-        return header;
-    }
+		HttpEntity<Object> request = new HttpEntity<>(body, headers);
+		ResponseEntity<?> responseEntity = null;
+
+		responseEntity = restTemplate.postForEntity(url, request, class1);
+
+		responseBody = (Response<Object>) responseEntity.getBody();
+
+		return responseBody;
+	}
+
+	/**
+	 * Crea los headers para la petici&oacute;n falta agregar el tema de seguridad
+	 * para las peticiones
+	 *
+	 * @return
+	 */
+	private static HttpHeaders createHttpHeaders() {
+		HttpHeaders header = new HttpHeaders();
+		header.setContentType(MediaType.APPLICATION_JSON);
+		header.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+		return header;
+	}
+
+	/**
+	 * Crea los headers para la petici&oacute;n con token todo - falta agregar el
+	 * tema de seguridad para las peticiones
+	 *
+	 * @return
+	 */
+	private static HttpHeaders createHttpHeadersToken(String subject) {
+		HttpHeaders header = new HttpHeaders();
+		header.setContentType(MediaType.APPLICATION_JSON);
+		header.set("Authorization", "Bearer " + subject);
+
+		header.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+		return header;
+	}
+
+	///////////////////////////////////////////////////// peticion con archivos
+	/**
+	 * Crea los headers para la petici&oacute;n con token todo - falta agregar el
+	 * tema de seguridad para las peticiones
+	 *
+	 * @return
+	 */
+	/**
+	 * Env&iacute;a una petici&oacute;n con Body, archivos y token.
+	 *
+	 * @param url
+	 * @param clazz
+	 * @return
+	 */
+	public Response<Object> sendPostRequestByteArrayArchviosToken(String url, EnviarDatosArchivosRequest body,
+			String subject, Class<Object> clazz) throws IOException {
+		Response<Object> responseBody = new Response<>();
+		HttpHeaders headers = RestTemplateUtil.createHttpHeadersArchivosToken(subject);
+
+		ResponseEntity<Object> responseEntity = null;
+		try {
+
+			LinkedMultiValueMap<String, Object> parts = new LinkedMultiValueMap<>();
+
+			for (MultipartFile file : body.getArchivos()) {
+				if (!file.isEmpty()) {
+					parts.add("files",
+							new MultipartInputStreamFileResource(file.getInputStream(), file.getOriginalFilename()));
+				}
+			}
+
+			parts.add("datos", body.getDatos());
+			HttpEntity<LinkedMultiValueMap<String, Object>> request = new HttpEntity<>(parts, headers);
+
+			responseEntity = restTemplate.postForEntity(url, request, clazz);
+			if (responseEntity.getStatusCode() == HttpStatus.OK && responseEntity.getBody() != null) {
+				// noinspection unchecked
+				responseBody = (Response<Object>) responseEntity.getBody();
+			} else {
+				throw new IOException("Ha ocurrido un error al enviar");
+			}
+		} catch (IOException ioException) {
+			throw ioException;
+		} catch (Exception e) {
+			log.error("Fallo al consumir el servicio, {}", e.getMessage());
+			responseBody.setCodigo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+			responseBody.setError(true);
+			responseBody.setMensaje(e.getMessage());
+		}
+
+		return responseBody;
+	}
+
+	private static HttpHeaders createHttpHeadersArchivosToken(String subject) {
+
+		HttpHeaders header = new HttpHeaders();
+		header.setContentType(MediaType.MULTIPART_FORM_DATA);
+		header.setAccept(Arrays.asList(MediaType.MULTIPART_FORM_DATA, MediaType.APPLICATION_JSON));
+		header.set("Authorization", "Bearer " + subject);
+		return header;
+	}
+
+//////////////////////////////////////////
+	/**
+	 * Enviar una peticion con Body para reportes.
+	 *
+	 * @param url
+	 * @param clazz
+	 * @return
+	 */
+	public Response<Object> sendPostRequestByteArrayReportesToken(String url, DatosReporteDTO body, String subject,
+			Class<?> clazz) throws IOException {
+		Response<Object> responseBody = new Response<>();
+		HttpHeaders headers = RestTemplateUtil.createHttpHeadersToken(subject);
+
+		HttpEntity<Object> request = new HttpEntity<>(body, headers);
+		ResponseEntity<?> responseEntity = null;
+		responseEntity = restTemplate.postForEntity(url, request, clazz);
+		responseBody = (Response<Object>) responseEntity.getBody();
+
+		return responseBody;
+	}
 }
