@@ -1,7 +1,6 @@
 package com.imss.rolespermisos.model.request;
 
-import java.util.ArrayList;
-import java.util.List;
+
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 

@@ -38,9 +38,9 @@ public class RolPermisoController {
 	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackGenerico")
 	@Retry(name = "msflujo", fallbackMethod = "fallbackGenerico")
 	@TimeLimiter(name = "msflujo")
-	public CompletableFuture<?>  consultaRolPermiso(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
+	public CompletableFuture<Object>  consultaRolPermiso(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
 	
-		Response<?> response = rolesPermisosService.consultarRolesPermisos(request,authentication);
+		Response<Object> response = rolesPermisosService.consultarRolesPermisos(request,authentication);
 		return CompletableFuture.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
 	}
 
@@ -48,9 +48,9 @@ public class RolPermisoController {
 	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackGenerico")
 	@Retry(name = "msflujo", fallbackMethod = "fallbackGenerico")
 	@TimeLimiter(name = "msflujo")
-	public CompletableFuture<?>  consultaDetalleRolPermiso(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
+	public CompletableFuture<Object>  consultaDetalleRolPermiso(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
 	
-		Response<?> response =  rolesPermisosService.consultarDetalleRolPermiso(request,authentication);
+		Response<Object> response =  rolesPermisosService.consultarDetalleRolPermiso(request,authentication);
 		return CompletableFuture.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
       
 	}
@@ -59,9 +59,9 @@ public class RolPermisoController {
 	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackGenerico")
 	@Retry(name = "msflujo", fallbackMethod = "fallbackGenerico")
 	@TimeLimiter(name = "msflujo")
-	public CompletableFuture<?>  consultaPermisos(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
+	public CompletableFuture<Object>  consultaPermisos(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
 	
-		Response<?> response =  rolesPermisosService.consultarPermisos(request,authentication);
+		Response<Object> response =  rolesPermisosService.consultarPermisos(request,authentication);
 		return CompletableFuture.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
       
 	}
@@ -69,9 +69,9 @@ public class RolPermisoController {
 	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackGenerico")
 	@Retry(name = "msflujo", fallbackMethod = "fallbackGenerico")
 	@TimeLimiter(name = "msflujo")
-	public CompletableFuture<?>  consultaFuncionalidades(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
+	public CompletableFuture<Object>  consultaFuncionalidades(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
 	
-		Response<?> response =  rolesPermisosService.consultarFuncionalidades(request,authentication);
+		Response<Object> response =  rolesPermisosService.consultarFuncionalidades(request,authentication);
 		return CompletableFuture.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
       
 	}
@@ -80,9 +80,9 @@ public class RolPermisoController {
 	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackGenerico")
 	@Retry(name = "msflujo", fallbackMethod = "fallbackGenerico")
 	@TimeLimiter(name = "msflujo")
-	public CompletableFuture<?> agregar(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
+	public CompletableFuture<Object> agregar(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
 	
-		Response<?> response =  rolesPermisosService.agregarRolPermiso(request,authentication);
+		Response<Object> response =  rolesPermisosService.agregarRolPermiso(request,authentication);
 		return CompletableFuture.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
       
 	}
@@ -91,9 +91,9 @@ public class RolPermisoController {
 	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackGenerico")
 	@Retry(name = "msflujo", fallbackMethod = "fallbackGenerico")
 	@TimeLimiter(name = "msflujo")
-	public CompletableFuture<?>  actualizar(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
+	public CompletableFuture<Object>  actualizar(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
 	
-		Response<?> response =  rolesPermisosService.actualizarRolPermiso(request,authentication);
+		Response<Object> response =  rolesPermisosService.actualizarRolPermiso(request,authentication);
 		return CompletableFuture.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
       
 	}
@@ -103,23 +103,23 @@ public class RolPermisoController {
 	 * 
 	 * @return respuestas
 	 */
-	private CompletableFuture<?> fallbackGenerico(@RequestBody DatosRequest request, Authentication authentication,
+	private CompletableFuture<Object> fallbackGenerico(@RequestBody DatosRequest request, Authentication authentication,
 			CallNotPermittedException e) {
-		Response<?> response = providerRestTemplate.respuestaProvider(e.getMessage());
+		Response<Object> response = providerRestTemplate.respuestaProvider(e.getMessage());
 		return CompletableFuture
 				.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
 	}
 
-	private CompletableFuture<?> fallbackGenerico(@RequestBody DatosRequest request, Authentication authentication,
+	private CompletableFuture<Object> fallbackGenerico(@RequestBody DatosRequest request, Authentication authentication,
 			RuntimeException e) {
-		Response<?> response = providerRestTemplate.respuestaProvider(e.getMessage());
+		Response<Object> response = providerRestTemplate.respuestaProvider(e.getMessage());
 		return CompletableFuture
 				.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
 	}
 
-	private CompletableFuture<?> fallbackGenerico(@RequestBody DatosRequest request, Authentication authentication,
+	private CompletableFuture<Object> fallbackGenerico(@RequestBody DatosRequest request, Authentication authentication,
 			NumberFormatException e) {
-		Response<?> response = providerRestTemplate.respuestaProvider(e.getMessage());
+		Response<Object> response = providerRestTemplate.respuestaProvider(e.getMessage());
 		return CompletableFuture
 				.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
 	}

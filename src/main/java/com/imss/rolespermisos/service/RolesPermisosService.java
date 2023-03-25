@@ -9,16 +9,16 @@ import com.imss.rolespermisos.util.Response;
 
 public interface RolesPermisosService {
 
-	Response<?> consultarRolesPermisos(DatosRequest request, Authentication authentication) throws IOException;
+	Response<Object> consultarRolesPermisos(DatosRequest request, Authentication authentication) throws IOException;
 	
-	Response<?> consultarDetalleRolPermiso(DatosRequest request, Authentication authentication) throws IOException;
+	Response<Object> consultarDetalleRolPermiso(DatosRequest request, Authentication authentication) throws IOException;
 
-	Response<?> consultarPermisos(DatosRequest request, Authentication authentication) throws IOException;
+	Response<Object> consultarPermisos(DatosRequest request, Authentication authentication) throws IOException;
 
-	Response<?> consultarFuncionalidades(DatosRequest request, Authentication authentication) throws IOException;
+	Response<Object> consultarFuncionalidades(DatosRequest request, Authentication authentication) throws IOException;
 
-	Response<?> agregarRolPermiso(DatosRequest request, Authentication authentication) throws IOException;
+	Response<Object> agregarRolPermiso(DatosRequest request, Authentication authentication) throws IOException;
 	
-	Response<?> actualizarRolPermiso(DatosRequest request, Authentication authentication) throws IOException;
+	Response<Object> actualizarRolPermiso(DatosRequest request, Authentication authentication) throws IOException;
 
 }
