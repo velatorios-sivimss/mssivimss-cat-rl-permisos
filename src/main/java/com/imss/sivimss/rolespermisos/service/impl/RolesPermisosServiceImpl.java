@@ -125,6 +125,13 @@ public class RolesPermisosServiceImpl implements RolesPermisosService {
 	public Response<Object> consultarFuncionalidades(DatosRequest request, Authentication authentication)
 			throws IOException {
 
+		Gson gson = new Gson();
+		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
+		RolesPermisosRequest rolesPermisosRequest = gson.fromJson(datosJson, RolesPermisosRequest.class);
+		rolPermiso = new RolPermiso(rolesPermisosRequest);
+		
+		
+		
 		List<FuncionalidadResponse> funcionalidadResponses;
 		Response<Object> response = providerRestTemplate.consumirServicio(rolPermiso.obtenerFuncionalidad().getDatos(),
 				urlConsultaGenerica, authentication);
