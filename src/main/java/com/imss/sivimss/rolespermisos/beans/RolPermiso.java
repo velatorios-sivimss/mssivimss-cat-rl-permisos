@@ -198,11 +198,11 @@ public class RolPermiso {
 		DatosRequest request = new DatosRequest();
 		Map<String, Object> parametro = new HashMap<>();
 		String query = " SELECT sm.ID_FUNCIONALIDAD, sm.DES_TITULO AS desFuncionalidad "
-				+ " FROM svt_menu sm "
+				+ " FROM SVT_MENU sm "
 				+ " WHERE IFNULL(sm.ID_MODULO_PADRE,0) > 0 AND IFNULL(sm.ID_FUNCIONALIDAD,0) > 0 "
 				+ " AND sm.ID_FUNCIONALIDAD NOT IN ( "
 				+ " SELECT rfp.ID_FUNCIONALIDAD "
-				+ " FROM svc_rol_funcionalidad_permiso rfp "
+				+ " FROM SVC_ROL_FUNCIONALIDAD_PERMISO rfp "
 				+ " WHERE rfp.CVE_ESTATUS = 1 AND rfp.ID_ROL = " + this.idRol
 				+ " GROUP BY rfp.ID_FUNCIONALIDAD)";
 		String encoded = DatatypeConverter.printBase64Binary(query.getBytes());
