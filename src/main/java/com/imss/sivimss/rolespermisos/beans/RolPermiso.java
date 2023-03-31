@@ -4,7 +4,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import javax.xml.bind.DatatypeConverter;
 
 import com.imss.sivimss.rolespermisos.model.request.RolesPermisosRequest;
@@ -38,6 +37,7 @@ public class RolPermiso {
 	private static final String NOW = "CURRENT_TIMESTAMP()";
 	private static final String CVE_ESTATUS = "CVE_ESTATUS";
 	private static final String FROMROLFUNPERM = " FROM svc_rol_funcionalidad_permiso srfp ";
+	private static final String INNERJOINSVTMENU = " INNER JOIN svt_menu sm ON sm.ID_FUNCIONALIDAD = srfp.ID_FUNCIONALIDAD  ";
 	private static final String FEC_CREACION = "FEC_CREACION";
 	private static final String ID_USUARIO_ALTA = "ID_USUARIO_ALTA";
 	private static final String ID_ROL = "ID_ROL";
@@ -60,14 +60,14 @@ public class RolPermiso {
 
 	public DatosRequest obtenerRolesPermisos(DatosRequest request) {
 
-		String query = "SELECT  srfp.ID_ROL AS 'idRol', sf.DES_FUNCIONALIDAD AS funcionalidad, sf.ID_FUNCIONALIDAD AS idFuncionalidad"
+		String query = "SELECT  srfp.ID_ROL AS 'idRol', sm.DES_TITULO AS funcionalidad, sm.ID_FUNCIONALIDAD AS idFuncionalidad "
 				+ " , sr.DES_ROL AS 'nombre', sno.DES_NIVELOFICINA  AS 'nivel' "
 				+ " ,srfp.CVE_ESTATUS AS 'estatus',  GROUP_CONCAT(sp.DES_PERMISO) AS permiso "
 				+ " , srfp.FEC_CREACION AS fechaCreacion " + FROMROLFUNPERM
 				+ " INNER JOIN svc_rol sr ON srfp.ID_ROL = sr.ID_ROL "
 				+ " INNER JOIN svc_nivel_oficina sno ON sr.ID_OFICINA = sno.ID_OFICINA "
 				+ " INNER JOIN svc_permiso sp ON srfp.ID_PERMISO = sp.ID_PERMISO "
-				+ " INNER JOIN svc_funcionalidad sf ON sf.ID_FUNCIONALIDAD = srfp.ID_FUNCIONALIDAD "
+				+ INNERJOINSVTMENU
 				+ " WHERE srfp.CVE_Estatus = 1 GROUP BY 1,2";
 		String encoded = DatatypeConverter.printBase64Binary(query.getBytes());
 		request.getDatos().put(AppConstantes.QUERY, encoded);
@@ -75,14 +75,14 @@ public class RolPermiso {
 		return request;
 	}
 
-	public DatosRequest obtenerFiltroRolPermiso() throws JsonProcessingException  {
+	public DatosRequest obtenerFiltroRolPermiso()  {
 		DatosRequest request = new DatosRequest();
 		Map<String, Object> parametro = new HashMap<>();
-		String query = "SELECT sr.ID_ROL AS idRol, sr.DES_ROL AS nombre, sf.DES_FUNCIONALIDAD AS funcionalidad"
+		String query = "SELECT sr.ID_ROL AS idRol, sr.DES_ROL AS nombre, sm.DES_TITULO AS funcionalidad, sm.ID_FUNCIONALIDAD AS idFuncionalidad  "
 				+ ", sno.DES_NIVELOFICINA AS nivel, sr.CVE_ESTATUS AS estatus, GROUP_CONCAT(sp.DES_PERMISO) AS permisos "
 				+ " FROM svc_nivel_oficina sno " + " INNER JOIN svc_rol sr ON sr.ID_OFICINA  = sno.ID_OFICINA "
 				+ " INNER JOIN svc_rol_funcionalidad_permiso srfp ON srfp.ID_ROL =sr.ID_ROL AND srfp.CVE_ESTATUS "
-				+ " INNER JOIN svc_funcionalidad sf ON srfp.ID_FUNCIONALIDAD = sf.ID_FUNCIONALIDAD "
+				+ INNERJOINSVTMENU
 				+ " INNER JOIN svc_permiso sp ON srfp.ID_PERMISO = sp.ID_PERMISO  "
 				+ " WHERE sno.ID_OFICINA = " + this.nivel + " AND sr.CVE_ESTATUS = " + this.estatus
 				+ " AND sr.ID_ROL = " + this.idRol + " AND srfp.ID_PERMISO IN(" + this.permisos + ") "
@@ -98,13 +98,14 @@ public class RolPermiso {
 
 		DatosRequest request = new DatosRequest();
 		Map<String, Object> parametro = new HashMap<>();
-		String query = "SELECT  srfp.ID_ROL AS 'idRol',sf.ID_FUNCIONALIDAD AS idFuncionalidad, sf.DES_FUNCIONALIDAD AS funcionalidad, sr.DES_ROL AS 'nombre', sno.ID_OFICINA  AS 'nivel' "
+		String query = "SELECT  srfp.ID_ROL AS 'idRol',sm.ID_FUNCIONALIDAD AS idFuncionalidad, sm.DES_TITULO AS funcionalidad "
+				+ " , sr.DES_ROL AS 'nombre', sno.ID_OFICINA  AS 'nivel' "
 				+ " ,sr.CVE_ESTATUS AS 'estatus',  GROUP_CONCAT(sp.DES_PERMISO) AS permisos "
 				+ " , srfp.FEC_CREACION AS fechaCreacion " + FROMROLFUNPERM
 				+ " INNER JOIN svc_rol sr ON srfp.ID_ROL = sr.ID_ROL "
 				+ " INNER JOIN svc_nivel_oficina sno ON sr.ID_OFICINA = sno.ID_OFICINA "
 				+ " INNER JOIN svc_permiso sp ON srfp.ID_PERMISO = sp.ID_PERMISO "
-				+ " INNER JOIN svc_funcionalidad sf ON sf.ID_FUNCIONALIDAD = srfp.ID_FUNCIONALIDAD "
+				+ INNERJOINSVTMENU
 				+ " WHERE srfp.CVE_Estatus = 1 AND srfp.ID_ROL = " + this.idRol + " AND srfp.ID_FUNCIONALIDAD = "
 				+ this.idFuncionalidad + " GROUP BY 1,2";
 		String encoded = DatatypeConverter.printBase64Binary(query.getBytes());
