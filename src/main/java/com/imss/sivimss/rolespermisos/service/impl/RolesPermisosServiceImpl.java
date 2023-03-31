@@ -35,13 +35,13 @@ public class RolesPermisosServiceImpl implements RolesPermisosService {
 
 	@Value("${endpoints.consulta-generica-paginado}")
 	private String urlConsultaGenericoPaginado;
-	
+
 	@Value("${endpoints.consulta-generica}")
 	private String urlConsultaGenerica;
-	
+
 	@Value("${endpoints.guardar-datos}")
 	private String urlGuardarDatos;
-	
+
 	@Value("${endpoints.actualizar-datos}")
 	private String urlActualizarDatos;
 
@@ -53,20 +53,21 @@ public class RolesPermisosServiceImpl implements RolesPermisosService {
 	@Autowired
 	private ModelMapper modelMapper;
 
-
 	private static final Logger log = LoggerFactory.getLogger(RolesPermisosServiceImpl.class);
-	private static final String NO_SE_ENCONTRO_INFORMACION = "45"; // No se encontró información relacionada a tu búsqueda.
-	private static final String AGREGADO_CORRECTAMENTE  = "30"; //Agregado correctamente.
-	private static final String MODIFICADO_CORRECTAMENTE  = "18"; // Modificado correctamente.
-	private static final String ERROR_GUARDAR  = "5"; // Error al guardar la información. Intenta nuevamente.
-	
-	
+	private static final String NO_SE_ENCONTRO_INFORMACION = "45"; // No se encontró información relacionada a tu
+																	// búsqueda.
+	private static final String AGREGADO_CORRECTAMENTE = "30"; // Agregado correctamente.
+	private static final String MODIFICADO_CORRECTAMENTE = "18"; // Modificado correctamente.
+	private static final String ERROR_GUARDAR = "5"; // Error al guardar la información. Intenta nuevamente.
+
 	@Override
 	public Response<Object> consultarRolesPermisos(DatosRequest request, Authentication authentication)
 			throws IOException {
 
-		return MensajeResponseUtil.mensajeConsultaResponse( providerRestTemplate.consumirServicio(rolPermiso.obtenerRolesPermisos(request).getDatos(),
-				urlConsultaGenericoPaginado, authentication), NO_SE_ENCONTRO_INFORMACION);
+		return MensajeResponseUtil.mensajeConsultaResponse(
+				providerRestTemplate.consumirServicio(rolPermiso.obtenerRolesPermisos(request).getDatos(),
+						urlConsultaGenericoPaginado, authentication),
+				NO_SE_ENCONTRO_INFORMACION);
 	}
 
 	@Override
@@ -79,15 +80,15 @@ public class RolesPermisosServiceImpl implements RolesPermisosService {
 		rolPermiso = new RolPermiso(rolesPermisosRequest);
 		List<RolPermisoDetalleResponse> permisoResponse;
 
-		Response<Object> response = providerRestTemplate.consumirServicio(
-				rolPermiso.obtenerFiltroRolPermiso().getDatos(), urlConsultaGenerica,
-				authentication);
+		Response<Object> response = providerRestTemplate
+				.consumirServicio(rolPermiso.obtenerFiltroRolPermiso().getDatos(), urlConsultaGenerica, authentication);
 		if (response.getCodigo() == 200) {
 			permisoResponse = Arrays.asList(modelMapper.map(response.getDatos(), RolPermisoDetalleResponse[].class));
 			response.setDatos(ConvertirGenerico.convertInstanceOfObject(permisoResponse));
 		}
-		return MensajeResponseUtil.mensajeConsultaResponse( response, NO_SE_ENCONTRO_INFORMACION);
+		return MensajeResponseUtil.mensajeConsultaResponse(response, NO_SE_ENCONTRO_INFORMACION);
 	}
+
 	@Override
 	public Response<Object> consultarDetalleRolPermiso(DatosRequest request, Authentication authentication)
 			throws IOException {
@@ -98,15 +99,13 @@ public class RolesPermisosServiceImpl implements RolesPermisosService {
 		List<RolPermisoDetalleResponse> permisoResponse;
 
 		Response<Object> response = providerRestTemplate.consumirServicio(
-				rolPermiso.obtenerDetalleRolPermiso().getDatos(), urlConsultaGenerica,
-				authentication);
+				rolPermiso.obtenerDetalleRolPermiso().getDatos(), urlConsultaGenerica, authentication);
 		if (response.getCodigo() == 200) {
 			permisoResponse = Arrays.asList(modelMapper.map(response.getDatos(), RolPermisoDetalleResponse[].class));
 			response.setDatos(ConvertirGenerico.convertInstanceOfObject(permisoResponse));
 		}
-		return MensajeResponseUtil.mensajeConsultaResponse( response, NO_SE_ENCONTRO_INFORMACION);
+		return MensajeResponseUtil.mensajeConsultaResponse(response, NO_SE_ENCONTRO_INFORMACION);
 	}
-
 
 	@Override
 	public Response<Object> consultarPermisos(DatosRequest request, Authentication authentication) throws IOException {
@@ -129,9 +128,7 @@ public class RolesPermisosServiceImpl implements RolesPermisosService {
 		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
 		RolesPermisosRequest rolesPermisosRequest = gson.fromJson(datosJson, RolesPermisosRequest.class);
 		rolPermiso = new RolPermiso(rolesPermisosRequest);
-		
-		
-		
+
 		List<FuncionalidadResponse> funcionalidadResponses;
 		Response<Object> response = providerRestTemplate.consumirServicio(rolPermiso.obtenerFuncionalidad().getDatos(),
 				urlConsultaGenerica, authentication);
@@ -141,7 +138,6 @@ public class RolesPermisosServiceImpl implements RolesPermisosService {
 		}
 		return response;
 	}
-
 
 	@Override
 	public Response<Object> actualizarRolPermiso(DatosRequest request, Authentication authentication)
@@ -157,13 +153,12 @@ public class RolesPermisosServiceImpl implements RolesPermisosService {
 			throw new BadRequestException(HttpStatus.BAD_REQUEST, ERROR_GUARDAR);
 		}
 		rolPermiso = new RolPermiso(rolesPermisosRequest);
-
-		return actualizarPermisos(rolPermiso, authentication, MODIFICADO_CORRECTAMENTE);
+		reiniciarEstatus(rolPermiso, authentication);
+		return agregarActualizarPermisos(rolPermiso, authentication, MODIFICADO_CORRECTAMENTE);
 	}
 
 	@Override
-	public Response<Object> agregarRolPermiso(DatosRequest request, Authentication authentication)
-			throws IOException {
+	public Response<Object> agregarRolPermiso(DatosRequest request, Authentication authentication) throws IOException {
 
 		Gson gson = new Gson();
 		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
@@ -176,9 +171,9 @@ public class RolesPermisosServiceImpl implements RolesPermisosService {
 		}
 		rolPermiso = new RolPermiso(rolesPermisosRequest);
 
-		return agregarPermisos(rolPermiso, authentication, AGREGADO_CORRECTAMENTE);
+		return agregarActualizarPermisos(rolPermiso, authentication, AGREGADO_CORRECTAMENTE);
 	}
-	
+
 	private List<Integer> extraerPermisosRol(String cadena) {
 		ArrayList<Integer> num = new ArrayList<>();
 		Matcher encontrar = Pattern.compile("\\d+").matcher(cadena);
@@ -188,34 +183,29 @@ public class RolesPermisosServiceImpl implements RolesPermisosService {
 		return num;
 	}
 
-
-	private Response<Object> agregarPermisos(RolPermiso rolPermiso, Authentication authentication, String numeroMensaje)
-			throws IOException {
+	private Response<Object> agregarActualizarPermisos(RolPermiso rolPermiso, Authentication authentication,
+			String numeroMensaje) throws IOException {
 		Response<Object> temp = null;
 
 		Gson gson = new Gson();
 		UsuarioDto usuarioDto = gson.fromJson((String) authentication.getPrincipal(), UsuarioDto.class);
 		List<Integer> listaPermisosRol = extraerPermisosRol(rolPermiso.getPermisos());
 
-		rolPermiso.setEstatus(0);
-		rolPermiso.setIdUsuarioModifica(usuarioDto.getIdUsuario());
-		providerRestTemplate.consumirServicio(rolPermiso.actualizar().getDatos(),
-				urlActualizarDatos, authentication);
 		try {
-		for (Integer permiso : listaPermisosRol) {
-			rolPermiso.setIdPermiso(permiso);
-			if (Boolean.TRUE.equals(existeParametroCofig(rolPermiso, authentication))) {
-				rolPermiso.setEstatus(1);
-				rolPermiso.setIdUsuarioModifica(usuarioDto.getIdUsuario());
-				temp = MensajeResponseUtil.mensajeResponse(providerRestTemplate.consumirServicio(rolPermiso.actualizar().getDatos(),
-						urlActualizarDatos, authentication), numeroMensaje);
-			} else {
-				rolPermiso.setIdUsuarioAlta(usuarioDto.getIdUsuario());
-				rolPermiso.setEstatus(1);
-				temp = MensajeResponseUtil.mensajeResponse(providerRestTemplate.consumirServicio(rolPermiso.insertar().getDatos(),
-						urlGuardarDatos, authentication), numeroMensaje);
+			for (Integer permiso : listaPermisosRol) {
+				rolPermiso.setIdPermiso(permiso);
+				if (Boolean.TRUE.equals(existeParametroCofig(rolPermiso, authentication))) {
+					rolPermiso.setEstatus(1);
+					rolPermiso.setIdUsuarioModifica(usuarioDto.getIdUsuario());
+					temp = MensajeResponseUtil.mensajeResponse(providerRestTemplate.consumirServicio(
+							rolPermiso.actualizar().getDatos(), urlActualizarDatos, authentication), numeroMensaje);
+				} else {
+					rolPermiso.setIdUsuarioAlta(usuarioDto.getIdUsuario());
+					rolPermiso.setEstatus(1);
+					temp = MensajeResponseUtil.mensajeResponse(providerRestTemplate.consumirServicio(
+							rolPermiso.insertar().getDatos(), urlGuardarDatos, authentication), numeroMensaje);
+				}
 			}
-		}
 		} catch (Exception e) {
 			log.error("Error.. {}", e.getMessage());
 			throw new BadRequestException(HttpStatus.BAD_REQUEST, ERROR_GUARDAR);
@@ -223,29 +213,13 @@ public class RolesPermisosServiceImpl implements RolesPermisosService {
 		return temp;
 	}
 
-	private Response<Object> actualizarPermisos(RolPermiso rolPermiso, Authentication authentication, String numeroMensaje)
-			throws IOException {
-		Response<Object> temp = null;
+	private void reiniciarEstatus(RolPermiso rolPermiso, Authentication authentication) throws IOException {
 
 		Gson gson = new Gson();
 		UsuarioDto usuarioDto = gson.fromJson((String) authentication.getPrincipal(), UsuarioDto.class);
-		List<Integer> listaPermisosRol = extraerPermisosRol(rolPermiso.getPermisos());
 		rolPermiso.setEstatus(0);
 		rolPermiso.setIdUsuarioModifica(usuarioDto.getIdUsuario());
 		providerRestTemplate.consumirServicio(rolPermiso.actualizar().getDatos(), urlActualizarDatos, authentication);
-		try {
-			for (Integer permiso : listaPermisosRol) {
-				rolPermiso.setIdPermiso(permiso);
-				rolPermiso.setEstatus(1);
-				rolPermiso.setIdUsuarioModifica(usuarioDto.getIdUsuario());
-				temp = providerRestTemplate.consumirServicio(rolPermiso.actualizar().getDatos(), urlActualizarDatos,
-						authentication);
-			}
-		} catch (Exception e) {
-			log.error("Error.. {}", e.getMessage());
-			throw new BadRequestException(HttpStatus.BAD_REQUEST, ERROR_GUARDAR);
-		}
-		return temp;
 	}
 
 	private Boolean existeParametroCofig(RolPermiso rolPermiso, Authentication authentication) throws IOException {
@@ -254,6 +228,5 @@ public class RolesPermisosServiceImpl implements RolesPermisosService {
 		return !existe.getDatos().toString().equals("[]");
 
 	}
-	
 
 }
