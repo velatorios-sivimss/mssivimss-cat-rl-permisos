@@ -62,7 +62,7 @@ public class RolPermiso {
 
 		String query = "SELECT  srfp.ID_ROL AS 'idRol', sm.DES_TITULO AS funcionalidad, sm.ID_FUNCIONALIDAD AS idFuncionalidad "
 				+ " , sr.DES_ROL AS 'nombre', sno.DES_NIVELOFICINA  AS 'nivel' "
-				+ " ,srfp.CVE_ESTATUS AS 'estatus',  GROUP_CONCAT(sp.DES_PERMISO) AS permiso "
+				+ " ,srfp.CVE_ESTATUS AS 'estatus',  GROUP_CONCAT(sp.DES_PERMISO) AS permisos "
 				+ " , srfp.FEC_CREACION AS fechaCreacion " + FROMROLFUNPERM
 				+ " INNER JOIN svc_rol sr ON srfp.ID_ROL = sr.ID_ROL "
 				+ " INNER JOIN svc_nivel_oficina sno ON sr.ID_OFICINA = sno.ID_OFICINA "
