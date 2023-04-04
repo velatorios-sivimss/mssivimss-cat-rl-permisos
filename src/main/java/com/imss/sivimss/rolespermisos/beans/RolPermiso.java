@@ -85,8 +85,10 @@ public class RolPermiso {
 				+ INNERJOINSVTMENU
 				+ " INNER JOIN svc_permiso sp ON srfp.ID_PERMISO = sp.ID_PERMISO  "
 				+ " WHERE sno.ID_OFICINA = " + this.nivel + " AND sr.CVE_ESTATUS = " + this.estatus
-				+ " AND sr.ID_ROL = " + this.idRol + " AND srfp.ID_PERMISO IN(" + this.permisos + ") "
-				+ " GROUP BY 1,3";
+				+ " AND sr.ID_ROL = " + this.idRol;
+				if ( this.permisos != null )
+					query = query + " AND srfp.ID_PERMISO IN(" + this.permisos + ") ";
+				query = query + " GROUP BY 1,3";
 
 		String encoded = DatatypeConverter.printBase64Binary(query.getBytes());
 		parametro.put(AppConstantes.QUERY, encoded);

@@ -80,17 +80,14 @@ public class RolesPermisosServiceImpl implements RolesPermisosService {
 		rolPermiso = new RolPermiso(rolesPermisosRequest);
 		List<RolPermisoDetalleResponse> permisoResponse;
 
-		Response<Object> response ;
-		if (rolesPermisosRequest.getPermisos() == null || rolesPermisosRequest.getPermisos().equals("")) {
-			throw new BadRequestException(HttpStatus.BAD_REQUEST, ERROR_GUARDAR);
-		}else {
-			response = providerRestTemplate
+
+		Response<Object> response = providerRestTemplate
 				.consumirServicio(rolPermiso.obtenerFiltroRolPermiso().getDatos(), urlConsultaGenerica, authentication);
 		if (response.getCodigo() == 200) {
 			permisoResponse = Arrays.asList(modelMapper.map(response.getDatos(), RolPermisoDetalleResponse[].class));
 			response.setDatos(ConvertirGenerico.convertInstanceOfObject(permisoResponse));
 		}
-		}
+		
 		return MensajeResponseUtil.mensajeConsultaResponse(response, NO_SE_ENCONTRO_INFORMACION);
 	}
 
