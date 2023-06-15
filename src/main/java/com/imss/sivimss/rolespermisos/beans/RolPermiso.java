@@ -35,9 +35,9 @@ public class RolPermiso {
 	private Integer idUsuarioModifica;
 	private String fechaModifica;
 	private static final String NOW = "CURRENT_TIMESTAMP()";
-	private static final String CVE_ESTATUS = "CVE_ESTATUS";
-	private static final String FROMROLFUNPERM = " FROM svc_rol_funcionalidad_permiso srfp ";
-	private static final String INNERJOINSVTMENU = " INNER JOIN svt_menu sm ON sm.ID_FUNCIONALIDAD = srfp.ID_FUNCIONALIDAD  ";
+	private static final String IND_ACTIVO = "IND_ACTIVO";
+	private static final String FROMROLFUNPERM = " FROM SVC_ROL_FUNCIONALIDAD_PERMISO srfp ";
+	private static final String INNERJOINSVTMENU = " INNER JOIN SVT_MENU sm ON sm.ID_MODULO = srfp.ID_FUNCIONALIDAD  ";
 	private static final String FEC_CREACION = "FEC_CREACION";
 	private static final String ID_USUARIO_ALTA = "ID_USUARIO_ALTA";
 	private static final String ID_ROL = "ID_ROL";
@@ -60,15 +60,15 @@ public class RolPermiso {
 
 	public DatosRequest obtenerRolesPermisos(DatosRequest request) {
 
-		String query = "SELECT  srfp.ID_ROL AS 'idRol', sm.DES_TITULO AS funcionalidad, sm.ID_FUNCIONALIDAD AS idFuncionalidad "
-				+ " , sr.DES_ROL AS 'nombre', sno.DES_NIVELOFICINA  AS 'nivel' "
-				+ " ,srfp.CVE_ESTATUS AS 'estatus',  GROUP_CONCAT(sp.DES_PERMISO) AS permisos "
-				+ " , srfp.FEC_CREACION AS fechaCreacion " + FROMROLFUNPERM
-				+ " INNER JOIN svc_rol sr ON srfp.ID_ROL = sr.ID_ROL "
-				+ " INNER JOIN svc_nivel_oficina sno ON sr.ID_OFICINA = sno.ID_OFICINA "
-				+ " INNER JOIN svc_permiso sp ON srfp.ID_PERMISO = sp.ID_PERMISO "
+		String query = "SELECT  srfp.ID_ROL AS 'idRol', sm.DES_TITULO AS funcionalidad, sm.ID_MODULO  as idFuncionalidad"
+				+ ", sr.DES_ROL AS 'nombre', sno.DES_NIVELOFICINA AS 'nivel' , srfp.IND_ACTIVO  AS 'estatus'"
+				+ ", GROUP_CONCAT(sp.DES_PERMISO) AS permisos, srfp.FEC_CREACION as fechaCreacion " 
+				+ FROMROLFUNPERM
+				+ " INNER JOIN SVC_ROL sr ON srfp.ID_ROL = sr.ID_ROL "
+				+ " INNER JOIN SVC_NIVEL_OFICINA sno ON sr.ID_OFICINA = sno.ID_OFICINA "
+				+ " INNER JOIN SVC_PERMISO sp ON srfp.ID_PERMISO = sp.ID_PERMISO "
 				+ INNERJOINSVTMENU
-				+ " WHERE srfp.CVE_Estatus = 1 GROUP BY 1,2";
+				+ " WHERE srfp.IND_ACTIVO = 1 GROUP BY 1,2";
 		String encoded = DatatypeConverter.printBase64Binary(query.getBytes());
 		request.getDatos().put(AppConstantes.QUERY, encoded);
 
@@ -78,13 +78,13 @@ public class RolPermiso {
 	public DatosRequest obtenerFiltroRolPermiso()  {
 		DatosRequest request = new DatosRequest();
 		Map<String, Object> parametro = new HashMap<>();
-		String query = "SELECT sr.ID_ROL AS idRol, sr.DES_ROL AS nombre, sm.DES_TITULO AS funcionalidad, sm.ID_FUNCIONALIDAD AS idFuncionalidad  "
-				+ ", sno.DES_NIVELOFICINA AS nivel, sr.CVE_ESTATUS AS estatus, GROUP_CONCAT(sp.DES_PERMISO) AS permisos "
-				+ " FROM svc_nivel_oficina sno " + " INNER JOIN svc_rol sr ON sr.ID_OFICINA  = sno.ID_OFICINA "
-				+ " INNER JOIN svc_rol_funcionalidad_permiso srfp ON srfp.ID_ROL =sr.ID_ROL AND srfp.CVE_ESTATUS "
+		String query = "SELECT sr.ID_ROL AS idRol, sr.DES_ROL AS nombre, sm.DES_TITULO AS funcionalidad, sm.ID_MODULO AS idFuncionalidad  "
+				+ ", sno.DES_NIVELOFICINA AS nivel, sr.IND_ACTIVO AS estatus, GROUP_CONCAT(sp.DES_PERMISO) AS permisos "
+				+ " FROM SVC_NIVEL_OFICINA sno " + " INNER JOIN SVC_ROL sr ON sr.ID_OFICINA  = sno.ID_OFICINA "
+				+ " INNER JOIN SVC_ROL_FUNCIONALIDAD_PERMISO srfp ON srfp.ID_ROL =sr.ID_ROL AND srfp.IND_ACTIVO "
 				+ INNERJOINSVTMENU
-				+ " INNER JOIN svc_permiso sp ON srfp.ID_PERMISO = sp.ID_PERMISO  "
-				+ " WHERE sno.ID_OFICINA = " + this.nivel + " AND sr.CVE_ESTATUS = " + this.estatus
+				+ " INNER JOIN SVC_PERMISO sp ON srfp.ID_PERMISO = sp.ID_PERMISO  "
+				+ " WHERE sno.ID_OFICINA = " + this.nivel + " AND sr.IND_ACTIVO = " + this.estatus
 				+ " AND sr.ID_ROL = " + this.idRol;
 				if ( this.permisos != null )
 					query = query + " AND srfp.ID_PERMISO IN(" + this.permisos + ") ";
@@ -100,15 +100,15 @@ public class RolPermiso {
 
 		DatosRequest request = new DatosRequest();
 		Map<String, Object> parametro = new HashMap<>();
-		String query = "SELECT  srfp.ID_ROL AS 'idRol',sm.ID_FUNCIONALIDAD AS idFuncionalidad, sm.DES_TITULO AS funcionalidad "
+		String query = "SELECT  srfp.ID_ROL AS 'idRol',sm.ID_MODULO AS idFuncionalidad, sm.DES_TITULO AS funcionalidad "
 				+ " , sr.DES_ROL AS 'nombre', sno.ID_OFICINA  AS 'nivel' "
-				+ " ,sr.CVE_ESTATUS AS 'estatus',  GROUP_CONCAT(sp.DES_PERMISO) AS permisos "
+				+ " ,sr.IND_ACTIVO AS 'estatus',  GROUP_CONCAT(sp.DES_PERMISO) AS permisos "
 				+ " , srfp.FEC_CREACION AS fechaCreacion " + FROMROLFUNPERM
-				+ " INNER JOIN svc_rol sr ON srfp.ID_ROL = sr.ID_ROL "
-				+ " INNER JOIN svc_nivel_oficina sno ON sr.ID_OFICINA = sno.ID_OFICINA "
-				+ " INNER JOIN svc_permiso sp ON srfp.ID_PERMISO = sp.ID_PERMISO "
+				+ " INNER JOIN SVC_ROL sr ON srfp.ID_ROL = sr.ID_ROL "
+				+ " INNER JOIN SVC_NIVEL_OFICINA sno ON sr.ID_OFICINA = sno.ID_OFICINA "
+				+ " INNER JOIN SVC_PERMISO sp ON srfp.ID_PERMISO = sp.ID_PERMISO "
 				+ INNERJOINSVTMENU
-				+ " WHERE srfp.CVE_Estatus = 1 AND srfp.ID_ROL = " + this.idRol + " AND srfp.ID_FUNCIONALIDAD = "
+				+ " WHERE srfp.IND_ACTIVO = 1 AND srfp.ID_ROL = " + this.idRol + " AND srfp.ID_FUNCIONALIDAD = "
 				+ this.idFuncionalidad + " GROUP BY 1,2";
 		String encoded = DatatypeConverter.printBase64Binary(query.getBytes());
 		parametro.put(AppConstantes.QUERY, encoded);
@@ -139,7 +139,7 @@ public class RolPermiso {
 		q.agregarParametroValues(ID_ROL, "'" + this.idRol + "'");
 		q.agregarParametroValues(ID_FUNCIONALIDAD, "'" + this.idFuncionalidad + "'");
 		q.agregarParametroValues(ID_PERMISO, "'" + this.idPermiso + "'");
-		q.agregarParametroValues(CVE_ESTATUS, "" + this.estatus);
+		q.agregarParametroValues(IND_ACTIVO, "" + this.estatus);
 		q.agregarParametroValues(ID_USUARIO_ALTA, "'" + this.idUsuarioAlta + "'");
 		q.agregarParametroValues(FEC_CREACION, NOW);
 		String query = q.obtenerQueryInsertar();
@@ -155,7 +155,7 @@ public class RolPermiso {
 		Map<String, Object> parametro = new HashMap<>();
 
 		final QueryHelper q = new QueryHelper("UPDATE SVC_ROL_FUNCIONALIDAD_PERMISO");
-		q.agregarParametroValues(CVE_ESTATUS, "" + this.estatus);
+		q.agregarParametroValues(IND_ACTIVO, "" + this.estatus);
 		if (this.idUsuarioModifica == null) {
 			q.agregarParametroValues(ID_USUARIO_ALTA, "'" + this.idUsuarioAlta + "'");
 			q.agregarParametroValues(FEC_CREACION, NOW);
@@ -200,13 +200,13 @@ public class RolPermiso {
 
 		DatosRequest request = new DatosRequest();
 		Map<String, Object> parametro = new HashMap<>();
-		String query = " SELECT sm.ID_FUNCIONALIDAD, sm.DES_TITULO AS desFuncionalidad "
+		String query = " SELECT sm.ID_MODULO AS idFuncionalidad, sm.DES_TITULO AS desFuncionalidad "
 				+ " FROM SVT_MENU sm "
-				+ " WHERE IFNULL(sm.ID_MODULO_PADRE,0) > 0 AND IFNULL(sm.ID_FUNCIONALIDAD,0) > 0 "
-				+ " AND sm.ID_FUNCIONALIDAD NOT IN ( "
+				+ " WHERE IFNULL(sm.ID_TABLA_PADRE,0) > 0 AND IFNULL(sm.ID_MODULO,0) > 0 "
+				+ " AND sm.ID_MODULO IN ( "
 				+ " SELECT rfp.ID_FUNCIONALIDAD "
 				+ " FROM SVC_ROL_FUNCIONALIDAD_PERMISO rfp "
-				+ " WHERE rfp.CVE_ESTATUS = 1 AND rfp.ID_ROL = " + this.idRol
+				+ " WHERE rfp.IND_ACTIVO = 1 AND rfp.ID_ROL = " + this.idRol
 				+ " GROUP BY rfp.ID_FUNCIONALIDAD)";
 		String encoded = DatatypeConverter.printBase64Binary(query.getBytes());
 		parametro.put(AppConstantes.QUERY, encoded);
