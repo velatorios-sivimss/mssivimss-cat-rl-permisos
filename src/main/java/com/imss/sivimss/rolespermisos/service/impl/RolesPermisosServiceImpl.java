@@ -55,10 +55,10 @@ public class RolesPermisosServiceImpl implements RolesPermisosService {
 	private static final String ERROR_GUARDAR = "5"; // Error al guardar la información. Intenta nuevamente.
 
 	private static final String CU003_NOMBRE = "GestionarRolesPermisos: ";
-	private static final String CONSULTAR_PAGINADO = "/paginado";
-	private static final String CONSULTAR = "/consulta";
-	private static final String GUARDAR_DATOS = "/crear";
-	private static final String ACTUALIZAR_DATOS = "/actualizar";
+	private static final String CONSULTAR_PAGINADO = "/generico/paginado";
+	private static final String CONSULTAR = "/generico/consulta";
+	private static final String GUARDAR_DATOS = "/generico/crear";
+	private static final String ACTUALIZAR_DATOS = "/generico/actualizar";
 	private static final String CONULTA_FILTROS = "consu-filtrodonados: ";
 	private static final String GENERAR_DOCUMENTO = "generarDocumento: ";
 	private static final String ACTUALIZA_ROL = "Actualiza Rol: " ;
