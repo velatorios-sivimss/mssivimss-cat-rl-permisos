@@ -2,6 +2,7 @@ package com.imss.sivimss.rolespermisos.controller;
 
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
+import java.util.logging.Level;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.imss.sivimss.rolespermisos.service.RolesPermisosService;
 import com.imss.sivimss.rolespermisos.util.DatosRequest;
+import com.imss.sivimss.rolespermisos.util.LogUtil;
 import com.imss.sivimss.rolespermisos.util.ProviderServiceRestTemplate;
 import com.imss.sivimss.rolespermisos.util.Response;
 
@@ -33,6 +35,12 @@ public class RolPermisoController {
 
 	
 	private RolesPermisosService rolesPermisosService;
+	
+
+	@Autowired
+	private LogUtil logUtil;
+	
+	private static final String CONSULTA = "consulta";
 	
 	@PostMapping("consultar/rolpermiso")
 	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackGenerico")
@@ -115,22 +123,28 @@ public class RolPermisoController {
 	 * @return respuestas
 	 */
 	private CompletableFuture<Object> fallbackGenerico(@RequestBody DatosRequest request, Authentication authentication,
-			CallNotPermittedException e) {
-		Response<Object> response = providerRestTemplate.respuestaProvider(e.getMessage());
+			CallNotPermittedException e)  throws IOException {
+		Response<Object> response = providerRestTemplate.respuestaProvider(e.getMessage());logUtil.crearArchivoLog(Level.INFO.toString(),this.getClass().getSimpleName()
+				,this.getClass().getPackage().toString(),e.getMessage(),CONSULTA,authentication);
+		logUtil.crearArchivoLog(Level.INFO.toString(),this.getClass().getSimpleName(),this.getClass().getPackage().toString(),e.getMessage(),CONSULTA + " " + request.getDatos().toString(),authentication);
 		return CompletableFuture
 				.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
 	}
 
 	private CompletableFuture<Object> fallbackGenerico(@RequestBody DatosRequest request, Authentication authentication,
-			RuntimeException e) {
-		Response<Object> response = providerRestTemplate.respuestaProvider(e.getMessage());
+			RuntimeException e) throws IOException {
+		Response<Object> response = providerRestTemplate.respuestaProvider(e.getMessage());logUtil.crearArchivoLog(Level.INFO.toString(),this.getClass().getSimpleName()
+				,this.getClass().getPackage().toString(),e.getMessage(),CONSULTA,authentication);
+		logUtil.crearArchivoLog(Level.INFO.toString(),this.getClass().getSimpleName(),this.getClass().getPackage().toString(),e.getMessage(),CONSULTA + " " + request.getDatos().toString(),authentication);
 		return CompletableFuture
 				.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
 	}
 
 	private CompletableFuture<Object> fallbackGenerico(@RequestBody DatosRequest request, Authentication authentication,
-			NumberFormatException e) {
-		Response<Object> response = providerRestTemplate.respuestaProvider(e.getMessage());
+			NumberFormatException e) throws IOException {
+		Response<Object> response = providerRestTemplate.respuestaProvider(e.getMessage());logUtil.crearArchivoLog(Level.INFO.toString(),this.getClass().getSimpleName()
+					,this.getClass().getPackage().toString(),e.getMessage(),CONSULTA,authentication);
+		logUtil.crearArchivoLog(Level.INFO.toString(),this.getClass().getSimpleName(),this.getClass().getPackage().toString(),e.getMessage(),CONSULTA + " " + request.getDatos().toString(),authentication);
 		return CompletableFuture
 				.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
 	}
